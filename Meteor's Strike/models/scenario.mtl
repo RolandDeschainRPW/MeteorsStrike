@@ -1,0 +1,73 @@
+# Blender MTL File: 'scenario.blend'
+# Material Count: 6
+
+newmtl EarthMat
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Albedo&Clouds.jpg
+map_Bump -bm -0.060000 Albedo&Clouds_h.jpg
+
+newmtl MarsMat
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.210000 0.210000 0.210000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Mars_8k-050104.png
+map_Bump Mars_8k-050104_h.png
+
+newmtl MoonMat
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd moon-diffuse.jpg
+map_Bump -bm 0.250000 moon-bump.jpg
+
+newmtl SaturnMat
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd th_saturn.png
+
+newmtl SaturnRingsMat
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd t00fri_gh_saturnrings.png
+map_Tr t00fri_gh_saturnrings.png
+map_d t00fri_gh_saturnrings.png
+
+newmtl SkyBoxMat
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 0
+map_Kd skybox-env-2k.png
