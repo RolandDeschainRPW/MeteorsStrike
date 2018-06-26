@@ -265,7 +265,6 @@ void do_motion(void) {
 	int time = glutGet(GLUT_ELAPSED_TIME);
 	angle += (time - prev_time)*0.02;
 	prev_time = time;
-	printf("%d/n", angle);
 	glutPostRedisplay();
 }
 
