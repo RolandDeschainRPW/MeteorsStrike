@@ -1,5 +1,5 @@
 # Blender MTL File: 'scenario.blend'
-# Material Count: 6
+# Material Count: 10
 
 newmtl EarthMat
 Ns 96.078431
@@ -10,8 +10,29 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd Albedo&Clouds.jpg
+map_Kd Albedo&Clouds_h.jpg
 map_Bump -bm -0.060000 Albedo&Clouds_h.jpg
+
+newmtl Extern
+Ns 96.078431
+Ka 0.037559 0.037559 0.037559
+Kd 0.000000 0.006105 0.037989
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 3
+map_Bump -bm 0.895288 bumpSpaceship9.png
+
+newmtl Lights
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 2.000000 2.000000 2.000000
+Ni 1.000000
+d 1.000000
+illum 1
 
 newmtl MarsMat
 Ns 96.078431
@@ -34,8 +55,16 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd moon-diffuse.jpg
+map_Kd moon-bump.jpg
 map_Bump -bm 0.250000 moon-bump.jpg
+
+newmtl None
+Ns 0
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
+illum 2
 
 newmtl SaturnMat
 Ns 96.078431
@@ -71,3 +100,13 @@ Ni 1.000000
 d 1.000000
 illum 0
 map_Kd skybox-env-2k.png
+
+newmtl window
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.008000 0.008000 0.008000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

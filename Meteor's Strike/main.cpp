@@ -16,6 +16,9 @@ const struct aiScene* scene = NULL;
 GLuint scene_list = 0;
 struct aiVector3D scene_min, scene_max, scene_center;
 
+//Liste da renderizzare
+//GLubyte lists[2];
+
 GLfloat LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat LightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 GLfloat LightPosition[] = { 0.0f, 0.0f, 15.0f, 1.0f };
@@ -30,6 +33,13 @@ GLuint*		textureIds;							// pointer to texture Array
 // currently this is hardcoded
 //static const std::string basepath = "./models/textures/"; //obj..
 static const std::string basepath = "./models/"; // per i file blend
+
+//Variabili movimento
+static float spinmov = 0.0;
+static float forward = 0.0;
+static float backward = 0.0;
+static bool ridisegna = false;
+
 
 void reshape(int width, int height) {
 
@@ -255,6 +265,7 @@ void do_motion(void) {
 	int time = glutGet(GLUT_ELAPSED_TIME);
 	angle += (time - prev_time)*0.02;
 	prev_time = time;
+	printf("%d/n", angle);
 	glutPostRedisplay();
 }
 
@@ -266,7 +277,6 @@ void display(void) {
 	glLoadIdentity();
 	//gluLookAt(0.f, 0.f, 3.f, 0.f, 0.f, -5.f, 0.f, 1.f, 0.f);
 	gluLookAt(11.f, 0.f, 11.f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
-
 	// rotate it around the y axis
 	glRotatef(angle, 0.f, 1.f, 0.f);
 
@@ -280,20 +290,56 @@ void display(void) {
 	// center the model
 	glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
 
+	GLubyte lists[2];
+
 	// if the display list has not been made yet, create a new one and
 	// fill it with scene contents
 	if (scene_list == 0) {
-		scene_list = glGenLists(1);
+		ridisegna = true;
+		scene_list = glGenLists(2);
 		glNewList(scene_list, GL_COMPILE);
 
 		// now begin at the root node of the imported data and traverse
 		// the scenegraph by multiplying subsequent local transforms
 		// together on GL's matrix stack.
-		recursive_render(scene, scene->mRootNode, 1.0);
-		glEndList();
-	}
+		//recursive_render(scene, scene->mRootNode, 1.0);		
 
-	glCallList(scene_list);
+		for (int i = 0; i < scene->mRootNode->mNumChildren; i++) {
+			if(i!= 8)
+				recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
+		}
+		
+		glEndList();
+		//glCallList(scene_list);
+		//prova = true;
+	}
+	
+
+	if (ridisegna) {
+
+		glNewList(scene_list + 1, GL_COMPILE);
+		glPushMatrix();
+		glTranslated(0, forward, 0.0);
+		glPushMatrix();
+		glTranslated(0, backward, 0.0);
+		glPushMatrix();
+		glRotatef(spinmov, 1.0, 0, 0.0);
+		glPushMatrix();
+		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
+		glPopMatrix();
+		glPopMatrix();
+		glPopMatrix();
+		glEndList();
+		ridisegna = false;
+	}
+		
+
+	
+	//glCallList(scene_list);
+	lists[0] = 0;
+	lists[1] = 1;
+	glListBase(scene_list);
+	glCallLists(2, GL_UNSIGNED_BYTE, lists);
 	glutSwapBuffers();
 	do_motion();
 }
@@ -489,6 +535,39 @@ int InitGL() {
 	return TRUE;
 }
 
+
+//Interazione tastiera
+static void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 27:
+		exit(1);
+		break;
+	case 'w':
+		forward += 0.125;
+		ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 's':
+		backward -= 0.125;
+		ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'a':
+		spinmov += 0.8;
+		ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'd':
+		spinmov -= 0.8;
+		ridisegna = true;
+		glutPostRedisplay();
+		break;
+	default:
+		break;
+	}
+}
+
+
 int main(int argc, char **argv) {
 
 	struct aiLogStream stream;
@@ -498,6 +577,7 @@ int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutCreateWindow("Meteor's Strike");
 	glutDisplayFunc(display);
+	glutKeyboardFunc(keyboard);
 	glutReshapeFunc(reshape);
 
 	// get a handle to the predefined STDOUT log stream and attach
@@ -525,6 +605,7 @@ int main(int argc, char **argv) {
 	*/
 
 	loadasset("models\\scenario.obj");
+	
 
 	if (!InitGL()) {
 		fprintf(stderr, "Initialization failed");
@@ -532,6 +613,9 @@ int main(int argc, char **argv) {
 	}
 
 	glutGet(GLUT_ELAPSED_TIME);
+	//Associo un nome al nodo relativo all'astronave
+	scene->mRootNode->mChildren[8]->mName.Set("Spaceship");
+
 	glutMainLoop();
 
 	// cleanup - calling 'aiReleaseImport' is important, as the library
