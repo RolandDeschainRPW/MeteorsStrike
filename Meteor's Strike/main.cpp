@@ -6,6 +6,7 @@
 #include <string.h>
 #include <map>
 
+
 #define TRUE	1
 #define FALSE	0
 #define aisgl_min(x,y) (x<y?x:y)
@@ -39,6 +40,13 @@ static float spinmov = 0.0;
 static float forward = 0.0;
 static float backward = 0.0;
 static bool ridisegna = false;
+
+static float eyex = -18.0f;
+static float eyey = 4.0f;
+static float eyez = -8.875f;
+static float centerx = -18.0f;
+static float centery = -0.25f;
+static float centerz = 0.75f;
 
 
 void reshape(int width, int height) {
@@ -263,7 +271,8 @@ void do_motion(void) {
 
 	static GLint prev_time = 0;
 	int time = glutGet(GLUT_ELAPSED_TIME);
-	angle += (time - prev_time)*0.02;
+	//angle += (time - prev_time)*0.02;
+	angle += (time - prev_time)*0.002;
 	prev_time = time;
 	glutPostRedisplay();
 }
@@ -275,9 +284,13 @@ void display(void) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//gluLookAt(0.f, 0.f, 3.f, 0.f, 0.f, -5.f, 0.f, 1.f, 0.f);
-	gluLookAt(11.f, 0.f, 11.f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
+	//gluLookAt(11.0f, 0.0f, 11.0f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
+	printf("a:%f\t b:%f\t c:%f\t d:%f\t e:%f\t f:%f\n", eyex, eyey, eyez,centerx,centery,centerz);
+	//Focus to spaceship
+	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-	glRotatef(angle, 0.f, 1.f, 0.f);
+	//glRotatef(angle, 0.f, 1.f, 0.f);
+	
 
 	// scale the whole asset to fit into our view frustum
 	/*tmp = scene_max.x - scene_min.x;
@@ -309,8 +322,7 @@ void display(void) {
 		}
 		
 		glEndList();
-		//glCallList(scene_list);
-		//prova = true;
+		
 	}
 	
 
@@ -318,7 +330,7 @@ void display(void) {
 
 		glNewList(scene_list + 1, GL_COMPILE);
 		glPushMatrix();
-		glTranslated(0, forward, 0.0);
+		glTranslated(0.0, 0.0, forward);
 		glPushMatrix();
 		glTranslated(0, backward, 0.0);
 		glPushMatrix();
@@ -332,9 +344,6 @@ void display(void) {
 		ridisegna = false;
 	}
 		
-
-	
-	//glCallList(scene_list);
 	lists[0] = 0;
 	lists[1] = 1;
 	glListBase(scene_list);
@@ -543,28 +552,83 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'w':
 		forward += 0.125;
+		eyez += 0.125;
+		centerz += 0.125;
 		ridisegna = true;
 		glutPostRedisplay();
 		break;
-	case 's':
+	/*case 's':
 		backward -= 0.125;
-		ridisegna = true;
+		eyex -= 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'q':
+		forward += 0.125;
+		eyey += 0.125;
+		//ridisegna = true;
 		glutPostRedisplay();
 		break;
 	case 'a':
 		spinmov += 0.8;
-		ridisegna = true;
+		eyey -= 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'e':
+		forward += 0.125;
+		eyez += 0.125;
+		//ridisegna = true;
 		glutPostRedisplay();
 		break;
 	case 'd':
 		spinmov -= 0.8;
-		ridisegna = true;
+		eyez -= 0.125;
+		//ridisegna = true;
 		glutPostRedisplay();
 		break;
+	case 'r':
+		spinmov -= 0.8;
+		centerx += 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'f':
+		spinmov -= 0.8;
+		centerx -= 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 't':
+		spinmov -= 0.8;
+		centery += 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'g':
+		spinmov -= 0.8;
+		centery -= 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'y':
+		spinmov -= 0.8;
+		centerz += 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;
+	case 'h':
+		spinmov -= 0.8;
+		centerz -= 0.125;
+		//ridisegna = true;
+		glutPostRedisplay();
+		break;*/
 	default:
 		break;
 	}
 }
+
+
 
 
 int main(int argc, char **argv) {
@@ -612,6 +676,7 @@ int main(int argc, char **argv) {
 	}
 
 	glutGet(GLUT_ELAPSED_TIME);
+
 	//Associo un nome al nodo relativo all'astronave
 	scene->mRootNode->mChildren[8]->mName.Set("Spaceship");
 
