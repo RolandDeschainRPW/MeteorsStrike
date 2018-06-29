@@ -40,6 +40,7 @@ static float spinmov = 0.0;
 static float forward = 0.0;
 static float left = 0.0;
 static float backward = 0.0;
+static float alfa = 0.0;
 
 //Variabile booleana per capire quando ridisegnare la mesh
 static bool ridisegna = false;
@@ -296,7 +297,7 @@ void display(void) {
 	//Focus to spaceship
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-    // glRotatef(angle, 0.f, 1.f, 0.f);
+    //glRotatef(angle, 0.f, 1.f, 0.f);
 	
 
 	// scale the whole asset to fit into our view frustum
@@ -358,7 +359,7 @@ void display(void) {
 	lists[1] = 1;
 	glListBase(scene_list);*/
 
-	//Invoco la lista con le istruzioni per visualizzare lo scenario
+	//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
 	glPushMatrix();
 	glRotatef(angle, 0.f, 1.f, 0.f);
 	glCallList(scene_list);
@@ -568,60 +569,51 @@ int InitGL() {
 
 //Interazione tastiera
 static void keyboard(unsigned char key, int x, int y) {
+
 	switch (key) {
 	case 27:
 		exit(1);
 		break;
 	//Movimento in avanti
 	case 'w':
-		forward += 0.02;
+		forward += 0.08;
+		//printf("%d", forward);
 		glutPostRedisplay();
 		break;
 	//Movimento indietro
 	case 's':
-		forward -= 0.02;
+		forward -= 0.08;
+		//printf("%d", forward);
 		glutPostRedisplay();
 		break;
 	//Movimento a sinistra
 	case 'a':
-		left += 0.02;
+		left += 0.08;
+		//alfa += 0.5;
+		//printf("%d", left);
 		glutPostRedisplay();
 		break;
 	//Movimento a destra
 	case 'd':
-		left -= 0.02;
+		left -= 0.08;
+		printf("%d", left);
 		glutPostRedisplay();
 		break;
-	/*case 's':
-		backward -= 0.125;
-		eyex -= 0.125;
-		//ridisegna = true;
-		glutPostRedisplay();
-		break;
+	
 	case 'q':
 		forward += 0.125;
 		eyey += 0.125;
 		//ridisegna = true;
 		glutPostRedisplay();
 		break;
-	case 'a':
-		spinmov += 0.8;
-		eyey -= 0.125;
-		//ridisegna = true;
-		glutPostRedisplay();
-		break;
+	
 	case 'e':
 		forward += 0.125;
 		eyez += 0.125;
 		//ridisegna = true;
 		glutPostRedisplay();
 		break;
-	case 'd':
-		spinmov -= 0.8;
-		eyez -= 0.125;
-		//ridisegna = true;
-		glutPostRedisplay();
-		break;
+	
 	case 'r':
 		spinmov -= 0.8;
 		centerx += 0.125;
@@ -657,7 +649,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		centerz -= 0.125;
 		//ridisegna = true;
 		glutPostRedisplay();
-		break;*/
+		break;
 	default:
 		break;
 	}
