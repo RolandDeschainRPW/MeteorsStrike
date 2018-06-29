@@ -38,15 +38,21 @@ static const std::string basepath = "./models/"; // per i file blend
 //Variabili movimento
 static float spinmov = 0.0;
 static float forward = 0.0;
+static float left = 0.0;
 static float backward = 0.0;
+
+//Variabile booleana per capire quando ridisegnare la mesh
 static bool ridisegna = false;
 
+//Variabili per controllo osservatore virtuale
 static float eyex = -18.0f;
 static float eyey = 4.0f;
 static float eyez = -8.875f;
 static float centerx = -18.0f;
 static float centery = -0.25f;
 static float centerz = 0.75f;
+
+static GLubyte lists[3];
 
 
 void reshape(int width, int height) {
@@ -272,8 +278,9 @@ void do_motion(void) {
 	static GLint prev_time = 0;
 	int time = glutGet(GLUT_ELAPSED_TIME);
 	//angle += (time - prev_time)*0.02;
-	angle += (time - prev_time)*0.002;
+	angle -= (time - prev_time)*0.002;
 	prev_time = time;
+	//angle -= 0.2;
 	glutPostRedisplay();
 }
 
@@ -285,11 +292,11 @@ void display(void) {
 	glLoadIdentity();
 	//gluLookAt(0.f, 0.f, 3.f, 0.f, 0.f, -5.f, 0.f, 1.f, 0.f);
 	//gluLookAt(11.0f, 0.0f, 11.0f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
-	printf("a:%f\t b:%f\t c:%f\t d:%f\t e:%f\t f:%f\n", eyex, eyey, eyez,centerx,centery,centerz);
+	//printf("a:%f\t b:%f\t c:%f\t d:%f\t e:%f\t f:%f\n", eyex, eyey, eyez,centerx,centery,centerz);
 	//Focus to spaceship
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-	//glRotatef(angle, 0.f, 1.f, 0.f);
+    // glRotatef(angle, 0.f, 1.f, 0.f);
 	
 
 	// scale the whole asset to fit into our view frustum
@@ -302,12 +309,10 @@ void display(void) {
 	// center the model
 	glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
 
-	GLubyte lists[2];
 
 	// if the display list has not been made yet, create a new one and
 	// fill it with scene contents
 	if (scene_list == 0) {
-		ridisegna = true;
 		scene_list = glGenLists(2);
 		glNewList(scene_list, GL_COMPILE);
 
@@ -322,32 +327,49 @@ void display(void) {
 		}
 		
 		glEndList();
-		
-	}
-	
 
-	if (ridisegna) {
+		/*glNewList(scene_list + 1, GL_COMPILE);
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
+		glPopMatrix();
+		glEndList();*/
 
 		glNewList(scene_list + 1, GL_COMPILE);
-		glPushMatrix();
-		glTranslated(0.0, 0.0, forward);
-		glPushMatrix();
+		/*glPushMatrix();
+		glTranslated(left, 0.0, forward);*/
+		/*glPushMatrix();
 		glTranslated(0, backward, 0.0);
 		glPushMatrix();
 		glRotatef(spinmov, 1.0, 0, 0.0);
-		glPushMatrix();
+		glPushMatrix();*/
 		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
-		glPopMatrix();
-		glPopMatrix();
-		glPopMatrix();
+		//glPopMatrix();
+		/*glPopMatrix();
+		glPopMatrix();*/
 		glEndList();
-		ridisegna = false;
-	}
+
 		
+		
+	}
+	
+	/* Non serve per ora
 	lists[0] = 0;
 	lists[1] = 1;
-	glListBase(scene_list);
-	glCallLists(2, GL_UNSIGNED_BYTE, lists);
+	glListBase(scene_list);*/
+
+	//Invoco la lista con le istruzioni per visualizzare lo scenario
+	glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glCallList(scene_list);
+	glPopMatrix();
+	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
+	glPushMatrix();
+	glTranslated(left, 0.0, forward);
+	glCallList(scene_list + 1);
+	glPopMatrix();
+
+	
 	glutSwapBuffers();
 	do_motion();
 }
@@ -550,11 +572,24 @@ static void keyboard(unsigned char key, int x, int y) {
 	case 27:
 		exit(1);
 		break;
+	//Movimento in avanti
 	case 'w':
-		forward += 0.125;
-		eyez += 0.125;
-		centerz += 0.125;
-		ridisegna = true;
+		forward += 0.02;
+		glutPostRedisplay();
+		break;
+	//Movimento indietro
+	case 's':
+		forward -= 0.02;
+		glutPostRedisplay();
+		break;
+	//Movimento a sinistra
+	case 'a':
+		left += 0.02;
+		glutPostRedisplay();
+		break;
+	//Movimento a destra
+	case 'd':
+		left -= 0.02;
 		glutPostRedisplay();
 		break;
 	/*case 's':
