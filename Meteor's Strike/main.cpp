@@ -41,6 +41,7 @@ static float forward = 0.0;
 static float left = 0.0;
 static float backward = 0.0;
 static float alfa = 0.0;
+static float up = 0.0;
 
 //Variabile booleana per capire quando ridisegnare la mesh
 static bool ridisegna = false;
@@ -314,7 +315,7 @@ void display(void) {
 	// if the display list has not been made yet, create a new one and
 	// fill it with scene contents
 	if (scene_list == 0) {
-		scene_list = glGenLists(2);
+		scene_list = glGenLists(3);
 		glNewList(scene_list, GL_COMPILE);
 
 		// now begin at the root node of the imported data and traverse
@@ -323,31 +324,20 @@ void display(void) {
 		//recursive_render(scene, scene->mRootNode, 1.0);		
 
 		for (int i = 0; i < scene->mRootNode->mNumChildren; i++) {
-			if(i!= 8)
+			if(i!= 8 && i!=9)
 				recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
 		}
 		
 		glEndList();
 
-		/*glNewList(scene_list + 1, GL_COMPILE);
-		glPushMatrix();
-		glRotatef(angle, 0.f, 1.f, 0.f);
-		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
-		glPopMatrix();
-		glEndList();*/
+		//Lista astronave
+		glNewList(scene_list + 1, GL_COMPILE);		
+		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);	
+		glEndList();
 
-		glNewList(scene_list + 1, GL_COMPILE);
-		/*glPushMatrix();
-		glTranslated(left, 0.0, forward);*/
-		/*glPushMatrix();
-		glTranslated(0, backward, 0.0);
-		glPushMatrix();
-		glRotatef(spinmov, 1.0, 0, 0.0);
-		glPushMatrix();*/
-		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
-		//glPopMatrix();
-		/*glPopMatrix();
-		glPopMatrix();*/
+		//Lista asteroide
+		glNewList(scene_list + 2, GL_COMPILE);
+		recursive_render(scene, scene->mRootNode->mChildren[9], 1.0);
 		glEndList();
 
 		
@@ -364,10 +354,38 @@ void display(void) {
 	glRotatef(angle, 0.f, 1.f, 0.f);
 	glCallList(scene_list);
 	glPopMatrix();
+
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
 	glPushMatrix();
-	glTranslated(left, 0.0, forward);
+	glTranslated(left, up, forward);
 	glCallList(scene_list + 1);
+	glPopMatrix();
+
+	//Lista relativa all'asteroide
+	glPushMatrix();
+	glRotatef(angle*10, 0.f, 1.f, 0.f);
+	glTranslatef(-2, 0, 0);
+	glCallList(scene_list + 2);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(angle * 10, 0.f, 1.f, 0.f);
+	glTranslatef(2, -2, 0);
+	glCallList(scene_list + 2);
+	glPopMatrix();
+
+
+	glPushMatrix();
+	glRotatef(angle * 10, 0.f, 1.f, 0.f);
+	glTranslatef(5, 3, 0);
+	glCallList(scene_list + 2);
+	glPopMatrix();
+
+
+	glPushMatrix();
+	glRotatef(angle * 10, 0.f, 1.f, 0.f);
+	glTranslatef(-4, 2, 0);
+	glCallList(scene_list + 2);
 	glPopMatrix();
 
 	
@@ -601,15 +619,19 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	
 	case 'q':
-		forward += 0.125;
-		eyey += 0.125;
+		//Up-boost
+		/*forward += 0.125;
+		eyey += 0.125;*/
+		up += 0.08;
 		//ridisegna = true;
 		glutPostRedisplay();
 		break;
 	
 	case 'e':
-		forward += 0.125;
-		eyez += 0.125;
+		//Down-boost
+		/*forward += 0.125;
+		eyez += 0.125;*/
+		up -= 0.08;
 		//ridisegna = true;
 		glutPostRedisplay();
 		break;
