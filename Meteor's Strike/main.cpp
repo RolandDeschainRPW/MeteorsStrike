@@ -5,6 +5,13 @@
 #include <IL/il.h>
 #include <string.h>
 #include <map>
+#include <list>
+#include <iostream>
+#include <string>
+#include <map>
+#include <random>
+
+using namespace std;
 
 
 #define TRUE	1
@@ -37,8 +44,8 @@ static const std::string basepath = "./models/"; // per i file blend
 
 //Variabili movimento
 static float spinmov = 0.0;
-static float forward = 0.0;
-static float left = 0.0;
+static float forwardMov = 0.0;
+static float leftMov = 0.0;
 static float backward = 0.0;
 static float alfa = 0.0;
 static float up = 0.0;
@@ -54,7 +61,27 @@ static float centerx = -18.0f;
 static float centery = -0.25f;
 static float centerz = 0.75f;
 
+//Numero meteoriti
+static int numMeteorites = 100;
+//Memorizzazione posizione meteoriti
+list<int> xMeteorites;
+list<int> yMeteorites;
+list<int> zMeteorites;
+
+// Liste per rendering
 static GLubyte lists[3];
+
+//Valori cubo per collisioni astronave
+static double sizeCubeSpaceship = 1.68;
+static float posxCubeSpaceship = -18.16;
+static float posyCubeSpaceship = 0;
+static float poszCubeSpaceship = 0;
+
+// Valori cubo per collisioni asteroidi
+static double sizeCubeMeteorites = 1.2;
+static float posxCubeMeteorites = -17.6;
+static float posyCubeMeteorites = 0;
+static float poszCubeMeteorites = 10.96;
 
 
 void reshape(int width, int height) {
@@ -279,11 +306,20 @@ void do_motion(void) {
 
 	static GLint prev_time = 0;
 	int time = glutGet(GLUT_ELAPSED_TIME);
-	//angle += (time - prev_time)*0.02;
 	angle -= (time - prev_time)*0.002;
 	prev_time = time;
-	//angle -= 0.2;
 	glutPostRedisplay();
+}
+
+int random()
+{
+	int min = -10, max = +10;
+	int random_integer;
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+
+	return  random_integer = uni(rng);
 }
 
 void display(void) {
@@ -332,13 +368,21 @@ void display(void) {
 
 		//Lista astronave
 		glNewList(scene_list + 1, GL_COMPILE);		
-		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);	
+		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
 		glEndList();
 
 		//Lista asteroide
 		glNewList(scene_list + 2, GL_COMPILE);
 		recursive_render(scene, scene->mRootNode->mChildren[9], 1.0);
 		glEndList();
+
+		// Calcolo posizioni meteoriti
+		for (int i = 0; i < numMeteorites; i++) {
+			xMeteorites.push_back(random());
+			yMeteorites.push_back(random());
+			zMeteorites.push_back(random());
+
+		}
 
 		
 		
@@ -357,38 +401,43 @@ void display(void) {
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
 	glPushMatrix();
-	glTranslated(left, up, forward);
+	glTranslated(leftMov, up, forwardMov);
+	//glRotatef(alfa, 0, 0, 1);
 	glCallList(scene_list + 1);
 	glPopMatrix();
 
-	//Lista relativa all'asteroide
-	glPushMatrix();
-	glRotatef(angle*10, 0.f, 1.f, 0.f);
-	glTranslatef(-2, 0, 0);
-	glCallList(scene_list + 2);
-	glPopMatrix();
+	//Invoco le liste relative ai meteoriti
+	list<int>::iterator xMeteor = xMeteorites.begin();
+	list<int>::iterator yMeteor = yMeteorites.begin();
+	list<int>::iterator zMeteor = zMeteorites.begin();
+	for (int i = 0; i < numMeteorites; i++) {
+		glPushMatrix();
+		glRotatef(angle * 10, 0.f, 1.f, 0.f);
+		glTranslatef(*xMeteor, *yMeteor, *zMeteor);
+		glCallList(scene_list + 2);
+		glPopMatrix();
 
-	glPushMatrix();
-	glRotatef(angle * 10, 0.f, 1.f, 0.f);
-	glTranslatef(2, -2, 0);
-	glCallList(scene_list + 2);
-	glPopMatrix();
+		glPushMatrix();
+		glRotatef(angle * 10, 0.f, 1.f, 0.f);
+		glTranslatef(posxCubeMeteorites + *xMeteor, posyCubeMeteorites + *yMeteor, poszCubeMeteorites + *zMeteor);
+		//Rendo invisibile il cubo
+		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glutSolidCube(sizeCubeMeteorites);
+		glPopMatrix();
 
-
-	glPushMatrix();
-	glRotatef(angle * 10, 0.f, 1.f, 0.f);
-	glTranslatef(5, 3, 0);
-	glCallList(scene_list + 2);
-	glPopMatrix();
-
-
-	glPushMatrix();
-	glRotatef(angle * 10, 0.f, 1.f, 0.f);
-	glTranslatef(-4, 2, 0);
-	glCallList(scene_list + 2);
-	glPopMatrix();
-
+		xMeteor++;
+		yMeteor++;
+		zMeteor++;
+	}
 	
+	glPushMatrix();
+	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
+	//Rendo invisibile il cubo
+	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glutSolidCube(sizeCubeSpaceship);
+	glPopMatrix();
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glutSwapBuffers();
 	do_motion();
 }
@@ -594,27 +643,28 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	//Movimento in avanti
 	case 'w':
-		forward += 0.08;
+		forwardMov += 0.08;
+		//alfa += 0.08;
 		//printf("%d", forward);
 		glutPostRedisplay();
 		break;
 	//Movimento indietro
 	case 's':
-		forward -= 0.08;
+		forwardMov -= 0.08;
 		//printf("%d", forward);
 		glutPostRedisplay();
 		break;
 	//Movimento a sinistra
 	case 'a':
-		left += 0.08;
+		leftMov += 0.08;
 		//alfa += 0.5;
 		//printf("%d", left);
 		glutPostRedisplay();
 		break;
 	//Movimento a destra
 	case 'd':
-		left -= 0.08;
-		printf("%d", left);
+		leftMov -= 0.08;
+		//printf("%d", left);
 		glutPostRedisplay();
 		break;
 	
@@ -637,39 +687,64 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	
 	case 'r':
-		spinmov -= 0.8;
-		centerx += 0.125;
+		/*spinmov -= 0.8;
+		centerx += 0.125;*/
+		//xprova += 0.08;
+		//cout << "posx" << xprova<<endl;
 		//ridisegna = true;
+		posxCubeMeteorites += 0.08;
+		cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	case 'f':
-		spinmov -= 0.8;
-		centerx -= 0.125;
+		/*spinmov -= 0.8;
+		centerx -= 0.125;*/
+		//xprova -= 0.08;
+		//cout << "posx" << xprova << endl;
 		//ridisegna = true;
+		posxCubeMeteorites -= 0.08;
+		cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	case 't':
-		spinmov -= 0.8;
-		centery += 0.125;
+		/*spinmov -= 0.8;
+		centery += 0.125;*/
+		//zprova += 0.8;
+		sizeCubeMeteorites += 0.08;
+		cout << "Dimensione " << sizeCubeMeteorites<<endl;
+		
 		//ridisegna = true;
 		glutPostRedisplay();
 		break;
 	case 'g':
-		spinmov -= 0.8;
-		centery -= 0.125;
+		/*spinmov -= 0.8;
+		centery -= 0.125;*/
+		//zprova -= 0.8;
+		sizeCubeMeteorites -= 0.08;
+		cout << "Dimensione " << sizeCubeMeteorites << endl;
 		//ridisegna = true;
 		glutPostRedisplay();
 		break;
 	case 'y':
-		spinmov -= 0.8;
-		centerz += 0.125;
+		//spinmov -= 0.8;
+		//centerx += 0.125;
+		//eyex += 0.125;
 		//ridisegna = true;
+		poszCubeMeteorites += 0.08;
+		cout << poszCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	case 'h':
-		spinmov -= 0.8;
-		centerz -= 0.125;
+		//spinmov -= 0.8;
+		//centerx -= 0.125;
+		//eyex -= 0.125;
 		//ridisegna = true;
+		poszCubeMeteorites -= 0.08;
+		cout << poszCubeMeteorites << endl;
+		glutPostRedisplay();
+		break;
+	case'u':
+		angle -= 0.08;
 		glutPostRedisplay();
 		break;
 	default:
