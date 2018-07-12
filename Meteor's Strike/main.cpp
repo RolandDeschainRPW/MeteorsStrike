@@ -10,6 +10,8 @@
 #include <string>
 #include <map>
 #include <random>
+#include <math.h>
+#include "Meteorites.h"
 
 using namespace std;
 
@@ -63,10 +65,9 @@ static float centerz = 0.75f;
 
 //Numero meteoriti
 static int numMeteorites = 100;
-//Memorizzazione posizione meteoriti
-list<int> xMeteorites;
-list<int> yMeteorites;
-list<int> zMeteorites;
+
+// Lista meteoriti
+list<Meteorite> meteorites;
 
 // Liste per rendering
 static GLubyte lists[3];
@@ -311,16 +312,31 @@ void do_motion(void) {
 	glutPostRedisplay();
 }
 
-int random()
-{
-	int min = -10, max = +10;
-	int random_integer;
-	std::random_device rd;     // only used once to initialise (seed) engine
-	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+bool checkCollisionWithMeteor() {
 
-	return  random_integer = uni(rng);
-}
+	list<Meteorite>::iterator iter = meteorites.begin();
+	while (iter != meteorites.end()) {
+		Meteorite m = *iter;
+		//check the X axis
+		if (abs(m.getPosxCube() - (posxCubeSpaceship + leftMov)) < m.getSizeCube() + sizeCubeSpaceship)
+		{
+			//check the Y axis
+			if (abs(m.getPosyCube() - (posyCubeSpaceship + up)) < m.getSizeCube() + sizeCubeSpaceship)
+			{
+				//check the Z axis
+				if (abs(m.getPoszCube() - (poszCubeSpaceship + forwardMov)) < m.getSizeCube() + sizeCubeSpaceship)
+				{
+					return true;
+				}
+			}
+		}
+		iter++;
+		
+	}
+	return false;
+	}
+
+
 
 void display(void) {
 
@@ -378,9 +394,8 @@ void display(void) {
 
 		// Calcolo posizioni meteoriti
 		for (int i = 0; i < numMeteorites; i++) {
-			xMeteorites.push_back(random());
-			yMeteorites.push_back(random());
-			zMeteorites.push_back(random());
+			Meteorite m;
+			meteorites.push_back(m);
 
 		}
 
@@ -400,40 +415,45 @@ void display(void) {
 	glPopMatrix();
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
-	glPushMatrix();
-	glTranslated(leftMov, up, forwardMov);
-	//glRotatef(alfa, 0, 0, 1);
-	glCallList(scene_list + 1);
-	glPopMatrix();
+	if (checkCollisionWithMeteor()) {
+		glPushMatrix();
+		glTranslated(leftMov, up, forwardMov);
+		//glRotatef(alfa, 0, 0, 1);
+		glCallList(scene_list + 1);
+		glPopMatrix();
+	}
 
-	//Invoco le liste relative ai meteoriti
-	list<int>::iterator xMeteor = xMeteorites.begin();
-	list<int>::iterator yMeteor = yMeteorites.begin();
-	list<int>::iterator zMeteor = zMeteorites.begin();
+
+
+	list<Meteorite>::iterator meteoritesiter = meteorites.begin();
+	// Ciclo per renderizzare tutti i meteoriti
 	for (int i = 0; i < numMeteorites; i++) {
+		// Trasformazioni sul meteorite
 		glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
-		glTranslatef(*xMeteor, *yMeteor, *zMeteor);
+		glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
 		glCallList(scene_list + 2);
 		glPopMatrix();
 
+		// Trasformazioni sul cubo del meteorite
 		glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
-		glTranslatef(posxCubeMeteorites + *xMeteor, posyCubeMeteorites + *yMeteor, poszCubeMeteorites + *zMeteor);
+		glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
 		//Rendo invisibile il cubo
-		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		glutSolidCube(sizeCubeMeteorites);
 		glPopMatrix();
 
-		xMeteor++;
-		yMeteor++;
-		zMeteor++;
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		meteoritesiter++;
+
 	}
 	
+	// Trasformazioni sul cubo dell'astronave
 	glPushMatrix();
 	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
 	//Rendo invisibile il cubo
-	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glutSolidCube(sizeCubeSpaceship);
 	glPopMatrix();
 
