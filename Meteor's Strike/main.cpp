@@ -1,4 +1,4 @@
-#include "assimp.h"
+﻿#include "assimp.h"
 #include "aiPostProcess.h"
 #include "aiScene.h"
 #include "GL/glut.h"
@@ -20,6 +20,9 @@ using namespace std;
 #define FALSE	0
 #define aisgl_min(x,y) (x<y?x:y)
 #define aisgl_max(x,y) (y>x?y:x)
+
+#define PI 3.14159265
+
 
 // the global Assimp scene object
 const struct aiScene* scene = NULL;
@@ -318,7 +321,7 @@ bool checkCollisionWithMeteor() {
 	while (iter != meteorites.end()) {
 		Meteorite m = *iter;
 		//check the X axis
-		if (abs(m.getPosxCube() - (posxCubeSpaceship + leftMov)) < m.getSizeCube() + sizeCubeSpaceship)
+		/*if (abs(m.getPosxCube() - (posxCubeSpaceship + leftMov)) < m.getSizeCube() + sizeCubeSpaceship)
 		{
 			//check the Y axis
 			if (abs(m.getPosyCube() - (posyCubeSpaceship + up)) < m.getSizeCube() + sizeCubeSpaceship)
@@ -329,6 +332,30 @@ bool checkCollisionWithMeteor() {
 					return true;
 				}
 			}
+		}*/
+		/*x1 ’ = x1 · cos θ - z1 · sin θ
+		z1 ’ = x1 · sin θ + z1 · cos θ*/
+		double radiantAngle = ((angle * 10)*PI) / 180;
+		double x1 = m.getPosxCube();	
+		double x2 = posxCubeSpaceship + leftMov;
+		double y1 = m.getPosyCube();
+		double y2 = posyCubeSpaceship + up;
+		double z1 = m.getPoszCube();
+		double z2 = poszCubeSpaceship + forwardMov;
+
+		x1 = (x1 * cos(radiantAngle)) - (z1 * sin(radiantAngle));
+		z1 = (x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
+
+		double dx = x1 - x2;
+		double dy = y1 - y2;
+		double dz = z1 - z2;
+
+		/*float dx = m.getPosxCube() - (posxCubeSpaceship + leftMov);
+		float dy = m.getPosyCube() - (posyCubeSpaceship + up);
+		float dz = m.getPoszCube() - (poszCubeSpaceship + forwardMov);*/
+		double distance = sqrt(dx * dx + dy * dy + dz * dz);
+		if (distance < sizeCubeMeteorites) {
+			return true;
 		}
 		iter++;
 		
@@ -408,20 +435,19 @@ void display(void) {
 	lists[1] = 1;
 	glListBase(scene_list);*/
 
-	//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario � quello che ruota
+	//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
 	glPushMatrix();
 	glRotatef(angle, 0.f, 1.f, 0.f);
 	glCallList(scene_list);
 	glPopMatrix();
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
-	if (checkCollisionWithMeteor()) {
 		glPushMatrix();
 		glTranslated(leftMov, up, forwardMov);
 		//glRotatef(alfa, 0, 0, 1);
 		glCallList(scene_list + 1);
 		glPopMatrix();
-	}
+	
 
 
 
@@ -440,8 +466,9 @@ void display(void) {
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
 		glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
 		//Rendo invisibile il cubo
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		glutSolidCube(sizeCubeMeteorites);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
+		//glutSolidCube(sizeCubeMeteorites);
+		glutSolidSphere(sizeCubeMeteorites,50,50);
 		glPopMatrix();
 
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -453,8 +480,9 @@ void display(void) {
 	glPushMatrix();
 	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
 	//Rendo invisibile il cubo
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glutSolidCube(sizeCubeSpaceship);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
+	//glutSolidCube(sizeCubeSpaceship);
+	glutSolidSphere(sizeCubeMeteorites, 50, 50);
 	glPopMatrix();
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
