@@ -21,13 +21,16 @@ class Meteorite {
 	float zmeteorite;
 	
 	// Valori cubo per collisioni meteoriti
-	double sizeCubeMeteorites = 1.2;
-	float posxCubeMeteorites = -17.6;
-	float posyCubeMeteorites = 0;
-	float poszCubeMeteorites = 10.96;
+	double sizeCubeMeteorites;
+	float posxCubeMeteorites;
+	float posyCubeMeteorites;
+	float poszCubeMeteorites;
+
+	//Indice scene_list per visualizzazione
+	int scene_listNum;
 
 public:
-	Meteorite();
+	Meteorite(int selMeteor);
 	float getPosx();
 	float getPosy();
 	float getPosz();
@@ -35,5 +38,5 @@ public:
 	float getPosyCube();
 	float getPoszCube();
 	double getSizeCube();
-
+	int getSceneList();
 };

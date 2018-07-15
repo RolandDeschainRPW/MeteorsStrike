@@ -82,10 +82,15 @@ static float posyCubeSpaceship = 0;
 static float poszCubeSpaceship = 0;
 
 // Valori cubo per collisioni asteroidi
-static double sizeCubeMeteorites = 1.2;
+/*static double sizeCubeMeteorites = 1.2;
 static float posxCubeMeteorites = -17.6;
 static float posyCubeMeteorites = 0;
-static float poszCubeMeteorites = 10.96;
+static float poszCubeMeteorites = 10.96;*/
+
+static double sizeCubeMeteorites = 0.64;
+static float posxCubeMeteorites = -17.2;
+static float posyCubeMeteorites = 0.08;
+static float poszCubeMeteorites = 14.8;
 
 
 void reshape(int width, int height) {
@@ -394,7 +399,7 @@ void display(void) {
 	// if the display list has not been made yet, create a new one and
 	// fill it with scene contents
 	if (scene_list == 0) {
-		scene_list = glGenLists(3);
+		scene_list = glGenLists(6);
 		glNewList(scene_list, GL_COMPILE);
 
 		// now begin at the root node of the imported data and traverse
@@ -402,8 +407,7 @@ void display(void) {
 		// together on GL's matrix stack.
 		//recursive_render(scene, scene->mRootNode, 1.0);		
 
-		for (int i = 0; i < scene->mRootNode->mNumChildren; i++) {
-			if(i!= 8 && i!=9)
+		for (int i = 0; i < scene->mRootNode->mNumChildren - 5; i++) {
 				recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
 		}
 		
@@ -414,15 +418,39 @@ void display(void) {
 		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
 		glEndList();
 
-		//Lista asteroide
+		//Lista asteroide 1
 		glNewList(scene_list + 2, GL_COMPILE);
 		recursive_render(scene, scene->mRootNode->mChildren[9], 1.0);
 		glEndList();
 
+		//Lista asteroide 2
+		glNewList(scene_list + 3, GL_COMPILE);
+		recursive_render(scene, scene->mRootNode->mChildren[10], 1.0);
+		glEndList();
+		
+		//Lista asteroide 3
+		glNewList(scene_list + 4, GL_COMPILE);
+		recursive_render(scene, scene->mRootNode->mChildren[11], 1.0);
+		glEndList();
+
+		//Lista asteroide 4
+		glNewList(scene_list + 5, GL_COMPILE);
+		recursive_render(scene, scene->mRootNode->mChildren[12], 1.0);
+		glEndList();
+
 		// Calcolo posizioni meteoriti
 		for (int i = 0; i < numMeteorites; i++) {
-			Meteorite m;
-			meteorites.push_back(m);
+			Meteorite m1(0);
+			meteorites.push_back(m1);
+
+			Meteorite m2(1);
+			meteorites.push_back(m2);
+
+			Meteorite m3(2);
+			meteorites.push_back(m3);
+
+			Meteorite m4(3);
+			meteorites.push_back(m4);
 
 		}
 
@@ -442,36 +470,46 @@ void display(void) {
 	glPopMatrix();
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
+	//if (!checkCollisionWithMeteor()) {
 		glPushMatrix();
 		glTranslated(leftMov, up, forwardMov);
 		//glRotatef(alfa, 0, 0, 1);
 		glCallList(scene_list + 1);
 		glPopMatrix();
-	
+	//}
 
 
 
-	list<Meteorite>::iterator meteoritesiter = meteorites.begin();
+	list<Meteorite>::iterator meteoritesiter = meteorites.begin();	
+
 	// Ciclo per renderizzare tutti i meteoriti
-	for (int i = 0; i < numMeteorites; i++) {
+	for (int i = 0; i < numMeteorites*4; i++) {
 		// Trasformazioni sul meteorite
 		glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
 		glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
-		glCallList(scene_list + 2);
+		glCallList(scene_list + meteoritesiter->getSceneList());
 		glPopMatrix();
 
 		// Trasformazioni sul cubo del meteorite
 		glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
 		glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
-		//Rendo invisibile il cubo
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
 		//glutSolidCube(sizeCubeMeteorites);
-		glutSolidSphere(sizeCubeMeteorites,50,50);
+		//Rendo invisibile il cubo
+		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);		GLfloat materialColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };		glMaterialfv(GL_FRONT, GL_AMBIENT, materialColor);		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+		glutSolidSphere(meteoritesiter->getSizeCube(),50,50);
+		
+		glDepthMask(GL_TRUE);
+		glDisable(GL_BLEND);		
+		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		// disable blending
+		
 		glPopMatrix();
 
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 		meteoritesiter++;
 
 	}
@@ -480,12 +518,13 @@ void display(void) {
 	glPushMatrix();
 	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
 	//Rendo invisibile il cubo
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	//glutSolidCube(sizeCubeSpaceship);
 	glutSolidSphere(sizeCubeMeteorites, 50, 50);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glPopMatrix();
 
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	
 	glutSwapBuffers();
 	do_motion();
 }
@@ -691,28 +730,36 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	//Movimento in avanti
 	case 'w':
-		forwardMov += 0.08;
+		//forwardMov += 0.08;
 		//alfa += 0.08;
 		//printf("%d", forward);
+		posxCubeMeteorites += 0.08;
+		cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	//Movimento indietro
 	case 's':
-		forwardMov -= 0.08;
+		//forwardMov -= 0.08;
 		//printf("%d", forward);
+		posxCubeMeteorites -= 0.08;
+		cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	//Movimento a sinistra
 	case 'a':
-		leftMov += 0.08;
+		//leftMov += 0.08;
 		//alfa += 0.5;
 		//printf("%d", left);
+		posyCubeMeteorites += 0.08;
+		cout << posyCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	//Movimento a destra
 	case 'd':
-		leftMov -= 0.08;
+		//leftMov -= 0.08;
 		//printf("%d", left);
+		posyCubeMeteorites -= 0.08;
+		cout << posyCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	
@@ -720,8 +767,10 @@ static void keyboard(unsigned char key, int x, int y) {
 		//Up-boost
 		/*forward += 0.125;
 		eyey += 0.125;*/
-		up += 0.08;
+		//up += 0.08;
 		//ridisegna = true;
+		poszCubeMeteorites += 0.08;
+		cout << poszCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	
@@ -729,8 +778,10 @@ static void keyboard(unsigned char key, int x, int y) {
 		//Down-boost
 		/*forward += 0.125;
 		eyez += 0.125;*/
-		up -= 0.08;
+		//up -= 0.08;
 		//ridisegna = true;
+		poszCubeMeteorites -= 0.08;
+		cout << poszCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	
@@ -740,8 +791,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		//xprova += 0.08;
 		//cout << "posx" << xprova<<endl;
 		//ridisegna = true;
-		posxCubeMeteorites += 0.08;
-		cout << posxCubeMeteorites << endl;
+		sizeCubeMeteorites += 0.08;
+		cout << sizeCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	case 'f':
@@ -750,8 +801,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		//xprova -= 0.08;
 		//cout << "posx" << xprova << endl;
 		//ridisegna = true;
-		posxCubeMeteorites -= 0.08;
-		cout << posxCubeMeteorites << endl;
+		sizeCubeMeteorites -= 0.08;
+		cout << sizeCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	case 't':
