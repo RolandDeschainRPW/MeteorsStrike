@@ -505,7 +505,8 @@ void display(void) {
 		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		//glutSolidSphere(meteoritesiter->getSizeCube(),50,50);
 		
-				
+		
+		
 		
 		
 		//glPopMatrix();
