@@ -38,6 +38,7 @@ GLfloat LightPosition[] = { 0.0f, 0.0f, 15.0f, 1.0f };
 
 // current rotation angle
 static float angle = 0.f;
+static float visualangle = 0.f;
 
 // images / texture
 std::map<std::string, GLuint*> textureIdMap;	// map image filenames to textureIds
@@ -82,15 +83,15 @@ static float posyCubeSpaceship = 0;
 static float poszCubeSpaceship = 0;
 
 // Valori cubo per collisioni asteroidi
-/*static double sizeCubeMeteorites = 1.2;
+static double sizeCubeMeteorites = 1.2;
 static float posxCubeMeteorites = -17.6;
 static float posyCubeMeteorites = 0;
-static float poszCubeMeteorites = 10.96;*/
+static float poszCubeMeteorites = 10.96;
 
-static double sizeCubeMeteorites = 0.64;
-static float posxCubeMeteorites = -17.2;
-static float posyCubeMeteorites = 0.08;
-static float poszCubeMeteorites = 14.8;
+// Flag per inizio gioco
+bool startingGame = false;
+
+
 
 
 void reshape(int width, int height) {
@@ -312,12 +313,16 @@ void recursive_render(const struct aiScene *sc, const struct aiNode* nd, float s
 }
 
 void do_motion(void) {
-
-	static GLint prev_time = 0;
-	int time = glutGet(GLUT_ELAPSED_TIME);
-	angle -= (time - prev_time)*0.002;
-	prev_time = time;
-	glutPostRedisplay();
+	
+		static GLint prev_time = 0;
+		int time = glutGet(GLUT_ELAPSED_TIME);
+		if (startingGame) {
+			angle -= (time - prev_time)*0.002;
+		}else
+			visualangle -= (time - prev_time)*0.002;
+		prev_time = time;
+		glutPostRedisplay();
+	
 }
 
 bool checkCollisionWithMeteor() {
@@ -382,7 +387,7 @@ void display(void) {
 	//Focus to spaceship
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-    //glRotatef(angle, 0.f, 1.f, 0.f);
+    glRotatef(visualangle, 0.f, 1.f, 0.f);
 	
 
 	// scale the whole asset to fit into our view frustum
@@ -492,37 +497,34 @@ void display(void) {
 		glPopMatrix();
 
 		// Trasformazioni sul cubo del meteorite
-		glPushMatrix();
+		/*glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
-		glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
+		glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());*/
 		//glutSolidCube(sizeCubeMeteorites);
 		//Rendo invisibile il cubo
 		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);		GLfloat materialColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };		glMaterialfv(GL_FRONT, GL_AMBIENT, materialColor);		glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
-		glutSolidSphere(meteoritesiter->getSizeCube(),50,50);
+		//glutSolidSphere(meteoritesiter->getSizeCube(),50,50);
 		
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);		
-		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		// disable blending
+				
 		
-		glPopMatrix();
+		
+		//glPopMatrix();
 
 		meteoritesiter++;
 
 	}
-	
+
+	meteoritesiter = meteorites.begin();
+
 	// Trasformazioni sul cubo dell'astronave
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
 	//Rendo invisibile il cubo
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	//glutSolidCube(sizeCubeSpaceship);
 	glutSolidSphere(sizeCubeMeteorites, 50, 50);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glPopMatrix();
+	glPopMatrix();*/
 
 	
 	glutSwapBuffers();
@@ -843,11 +845,26 @@ static void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	case'u':
-		angle -= 0.08;
+		startingGame = true;
+		visualangle = 0;
 		glutPostRedisplay();
 		break;
 	default:
 		break;
+	}
+}
+
+void startGame(int choice) {
+	switch (choice) {
+	//Avvia gioco
+	case 1:
+		startingGame = true;
+		visualangle = 0;
+		break;
+	//Tutorial
+	case 2:
+		break;
+	
 	}
 }
 
@@ -902,6 +919,12 @@ int main(int argc, char **argv) {
 
 	//Associo un nome al nodo relativo all'astronave
 	scene->mRootNode->mChildren[8]->mName.Set("Spaceship");
+
+	int startMenu;
+	startMenu = glutCreateMenu(startGame);
+	glutAddMenuEntry("Avvia gioco", 1);
+	glutAddMenuEntry("Tutorial", 2);
+	glutAttachMenu(GLUT_LEFT_BUTTON);
 
 	glutMainLoop();
 
