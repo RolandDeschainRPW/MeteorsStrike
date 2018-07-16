@@ -41,6 +41,9 @@ GLfloat LightPosition[] = { 0.0f, 0.0f, 15.0f, 1.0f };
 static float angle = 0.f;
 static float visualangle = 0.f;
 
+//Offset in modo che i meteoriti non compaiano di fronte allo schermo
+static float offsetAngleMeteorites = -94.0814;
+
 // images / texture
 std::map<std::string, GLuint*> textureIdMap;	// map image filenames to textureIds
 GLuint*		textureIds;							// pointer to texture Array
@@ -66,6 +69,8 @@ static float centerz = 0.75f;
 
 //Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
 static int numMeteorites = 100;
+//Booleano per moltiplicazione avvenuta
+bool multiplied = false;
 
 //Lista meteoriti
 list<Meteorite> meteorites;
@@ -351,9 +356,12 @@ void do_motion(void) {
 		static GLint prev_time = 0;
 		int time = glutGet(GLUT_ELAPSED_TIME);
 		if (startingGame) {
-			angle -= (time - prev_time)*0.002;
-		}else
-			visualangle -= (time - prev_time)*0.002;
+			//angle -= (time - prev_time)*0.002;
+			angle -= 0.08;
+		}
+		else
+			//visualangle -= (time - prev_time)*0.002;
+			visualangle -= 0.08;
 		prev_time = time;
 		glutPostRedisplay();
 	
@@ -369,7 +377,7 @@ bool checkCollisionWithMeteor() {
 		y'=y
 		z'= -xsen(a)+zcos(a)
 		*/
-		double radiantAngle = ((angle * 10)*PI) / 180;
+		double radiantAngle = (((angle * 10)+offsetAngleMeteorites)*PI) / 180;
 		double x1 = m.getPosxCube();
 		double x2 = posxCubeSpaceship + leftMov;
 		double y1 = m.getPosyCube();
@@ -484,6 +492,11 @@ bool checkCollisionMeteorWithPlanet() {
 
 void display(void) {
 
+	if (angle < -360) {
+		multiplied = false;
+		angle += 360;
+	}
+
 	float tmp;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -494,7 +507,7 @@ void display(void) {
 	//Focus to spaceship
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-	//glRotatef(visualangle, 0.f, 1.f, 0.f);
+	glRotatef(visualangle, 0.f, 1.f, 0.f);
 
 
 	// scale the whole asset to fit into our view frustum
@@ -550,6 +563,7 @@ void display(void) {
 		recursive_render(scene, scene->mRootNode->mChildren[12], 1.0);
 		glEndList();
 
+
 		// Calcolo posizioni meteoriti
 		for (int i = 0; i < numMeteorites; i++) {
 			Meteorite m1(0);
@@ -570,6 +584,8 @@ void display(void) {
 
 
 	}
+
+
 
 	/* Non serve per ora
 	lists[0] = 0;
@@ -598,7 +614,7 @@ void display(void) {
 	for (int i = 0; i < numMeteorites * 4; i++) {
 		// Trasformazioni sul meteorite
 		glPushMatrix();
-		glRotatef(angle * 10, 0.f, 1.f, 0.f);
+		glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
 		glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
 		glCallList(scene_list + meteoritesiter->getSceneList());
 		glPopMatrix();
@@ -980,7 +996,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		cout << sizePlanet << endl;
 		break;
 	case'u':
-		angle -= 0.90;
+		offsetAngleMeteorites -= 0.08;
+		cout << offsetAngleMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	default:
