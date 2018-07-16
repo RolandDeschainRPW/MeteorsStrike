@@ -69,8 +69,11 @@ static float centerz = 0.75f;
 
 //Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
 static int numMeteorites = 100;
+
 //Booleano per moltiplicazione avvenuta
-bool multiplied = false;
+//Inizialmente settata a true, così l'incremento avverrà
+//solo dopo il primo giro di 360 gradi
+bool multiplied = true;
 
 //Lista meteoriti
 list<Meteorite> meteorites;
@@ -492,6 +495,7 @@ bool checkCollisionMeteorWithPlanet() {
 
 void display(void) {
 
+	// Mantiene la rotazione nel periodo 0-360 e resetta il booleano muiltiplied
 	if (angle < -360) {
 		multiplied = false;
 		angle += 360;
@@ -569,7 +573,6 @@ void display(void) {
 			Meteorite m1(0);
 			meteorites.push_back(m1);
 
-
 			Meteorite m2(1);
 			meteorites.push_back(m2);
 
@@ -585,9 +588,35 @@ void display(void) {
 
 	}
 
+	// Incrementa il numero di meteoriti
+	if ((int)angle % 360 < -10 && !multiplied) {
 
+		multiplied = true;
 
-	/* Non serve per ora
+		//Pulisci la lista dei meteoriti
+		meteorites.clear();
+
+		//Incrementa i meteoriti
+		numMeteorites += 4;
+
+		// Calcolo posizioni meteoriti
+		for (int i = 0; i < numMeteorites; i++) {
+			Meteorite m1(0);
+			meteorites.push_back(m1);
+
+			Meteorite m2(1);
+			meteorites.push_back(m2);
+
+			Meteorite m3(2);
+			meteorites.push_back(m3);
+
+			Meteorite m4(3);
+			meteorites.push_back(m4);
+
+		}
+	}
+
+/* Non serve per ora
 	lists[0] = 0;
 	lists[1] = 1;
 	glListBase(scene_list);*/
