@@ -12,7 +12,7 @@
 #include <map>
 #include <random>
 
-//Classe relativa ad un meteorite
+//Classe relativa ad un meteorite generico
 
 class Meteorite {
 	// Posizione del meteorite

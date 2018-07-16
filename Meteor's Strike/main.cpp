@@ -48,16 +48,12 @@ GLuint*		textureIds;							// pointer to texture Array
 //static const std::string basepath = "./models/textures/"; //obj..
 static const std::string basepath = "./models/"; // per i file blend
 
-//Variabili movimento
-static float spinmov = 0.0;
+//Variabili movimento 
 static float forwardMov = 0.0;
 static float leftMov = 0.0;
 static float backward = 0.0;
 static float alfa = 0.0;
 static float up = 0.0;
-
-//Variabile booleana per capire quando ridisegnare la mesh
-static bool ridisegna = false;
 
 //Variabili per controllo osservatore virtuale
 static float eyex = -18.0f;
@@ -67,10 +63,10 @@ static float centerx = -18.0f;
 static float centery = -0.25f;
 static float centerz = 0.75f;
 
-//Numero meteoriti
+//Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
 static int numMeteorites = 100;
 
-// Lista meteoriti
+//Lista meteoriti
 list<Meteorite> meteorites;
 
 // Liste per rendering
@@ -330,21 +326,12 @@ bool checkCollisionWithMeteor() {
 	list<Meteorite>::iterator iter = meteorites.begin();
 	while (iter != meteorites.end()) {
 		Meteorite m = *iter;
-		//check the X axis
-		/*if (abs(m.getPosxCube() - (posxCubeSpaceship + leftMov)) < m.getSizeCube() + sizeCubeSpaceship)
-		{
-			//check the Y axis
-			if (abs(m.getPosyCube() - (posyCubeSpaceship + up)) < m.getSizeCube() + sizeCubeSpaceship)
-			{
-				//check the Z axis
-				if (abs(m.getPoszCube() - (poszCubeSpaceship + forwardMov)) < m.getSizeCube() + sizeCubeSpaceship)
-				{
-					return true;
-				}
-			}
-		}*/
-		/*x1 ’ = x1 · cos θ - z1 · sin θ
-		z1 ’ = x1 · sin θ + z1 · cos θ*/
+		
+		/*	
+		x' = xcos(a) + zsen(a)
+		y'=y
+		z'= -xsen(a)+zcos(a)		
+		*/
 		double radiantAngle = ((angle * 10)*PI) / 180;
 		double x1 = m.getPosxCube();	
 		double x2 = posxCubeSpaceship + leftMov;
@@ -387,7 +374,7 @@ void display(void) {
 	//Focus to spaceship
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-    glRotatef(visualangle, 0.f, 1.f, 0.f);
+    //glRotatef(visualangle, 0.f, 1.f, 0.f);
 	
 
 	// scale the whole asset to fit into our view frustum
@@ -478,13 +465,12 @@ void display(void) {
 	//if (!checkCollisionWithMeteor()) {
 		glPushMatrix();
 		glTranslated(leftMov, up, forwardMov);
-		//glRotatef(alfa, 0, 0, 1);
 		glCallList(scene_list + 1);
 		glPopMatrix();
 	//}
 
 
-
+	// Iteratore per iterare sulla lista di meteoriti
 	list<Meteorite>::iterator meteoritesiter = meteorites.begin();	
 
 	// Ciclo per renderizzare tutti i meteoriti
@@ -733,64 +719,53 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	//Movimento in avanti
 	case 'w':
-		//forwardMov += 0.08;
+		forwardMov += 0.08;
 		//alfa += 0.08;
 		//printf("%d", forward);
-		posxCubeMeteorites += 0.08;
-		cout << posxCubeMeteorites << endl;
+		//posxCubeMeteorites += 0.08;
+		//cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 	//Movimento indietro
 	case 's':
-		//forwardMov -= 0.08;
+		forwardMov -= 0.08;
 		//printf("%d", forward);
-		posxCubeMeteorites -= 0.08;
-		cout << posxCubeMeteorites << endl;
+		/*posxCubeMeteorites -= 0.08;
+		cout << posxCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 	//Movimento a sinistra
 	case 'a':
-		//leftMov += 0.08;
+		leftMov += 0.08;
 		//alfa += 0.5;
 		//printf("%d", left);
-		posyCubeMeteorites += 0.08;
-		cout << posyCubeMeteorites << endl;
+		/*posyCubeMeteorites += 0.08;
+		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 	//Movimento a destra
 	case 'd':
-		//leftMov -= 0.08;
-		//printf("%d", left);
-		posyCubeMeteorites -= 0.08;
-		cout << posyCubeMeteorites << endl;
+		leftMov -= 0.08;
+		/*posyCubeMeteorites -= 0.08;
+		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	
+	//Up-boost
 	case 'q':
-		//Up-boost
-		/*forward += 0.125;
-		eyey += 0.125;*/
-		//up += 0.08;
-		//ridisegna = true;
-		poszCubeMeteorites += 0.08;
-		cout << poszCubeMeteorites << endl;
+		up += 0.08;
+		/*poszCubeMeteorites += 0.08;
+		cout << poszCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	
+	//Down-boost
 	case 'e':
-		//Down-boost
-		/*forward += 0.125;
-		eyez += 0.125;*/
-		//up -= 0.08;
-		//ridisegna = true;
-		poszCubeMeteorites -= 0.08;
-		cout << poszCubeMeteorites << endl;
+		up -= 0.08;
+		/*poszCubeMeteorites -= 0.08;
+		cout << poszCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	
+	//Tasti per test 
 	case 'r':
-		/*spinmov -= 0.8;
-		centerx += 0.125;*/
 		//xprova += 0.08;
 		//cout << "posx" << xprova<<endl;
 		//ridisegna = true;
