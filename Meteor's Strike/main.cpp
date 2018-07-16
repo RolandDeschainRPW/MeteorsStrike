@@ -12,6 +12,7 @@
 #include <random>
 #include <math.h>
 #include "Meteorites.h"
+#include "Planet.h"
 
 using namespace std;
 
@@ -83,6 +84,43 @@ static double sizeCubeMeteorites = 1.2;
 static float posxCubeMeteorites = -17.6;
 static float posyCubeMeteorites = 0;
 static float poszCubeMeteorites = 10.96;
+
+static double sizePlanet = 2;
+static float posxPlanet = 0.0;
+static float posyPlanet = 0.0;
+static float poszPlanet = 0.0;
+
+//Posizioni e dimensioni sfera pianeta terra
+static double sizeEarthSphere = 8.08;
+static float posxEarthSphere = -28;
+static float posyEarthSphere = -0.08;
+static float poszEarthSphere = -1.68;
+
+//Posizione e dimensioni Luna 
+static double sizeMoonSphere = 2.72;
+static float posxMoonSphere = -11.28;
+static float posyMoonSphere = -1.2;
+static float poszMoonSphere = 21.04;
+
+//Posizione e dimensioni Marte
+static double sizeMarsSphere = 6.8;
+static float posxMarsSphere = 13.52;
+static float posyMarsSphere = -4.88;
+static float poszMarsSphere = 18.08;
+
+//Posizione e diensioni Saturno
+static double sizeSaturnSphere = 8.08;
+static float posxSaturnSphere = 23.36;
+static float posySaturnSphere = -0.8;
+static float poszSaturnSphere = -18;
+
+Planet earth(8.08, -28, 0.08, -1.68);
+Planet moon(2.72, -11.28, -1.2, 21.04);
+Planet mars(6.8, 13.52, -4.88, 18.08);
+Planet saturn(8.08, 23.36, -0.8, -18);
+
+list<Planet> listOfPlanet;
+
 
 // Flag per inizio gioco
 bool startingGame = false;
@@ -326,40 +364,122 @@ bool checkCollisionWithMeteor() {
 	list<Meteorite>::iterator iter = meteorites.begin();
 	while (iter != meteorites.end()) {
 		Meteorite m = *iter;
-		
-		/*	
+		/*
 		x' = xcos(a) + zsen(a)
 		y'=y
-		z'= -xsen(a)+zcos(a)		
+		z'= -xsen(a)+zcos(a)
 		*/
 		double radiantAngle = ((angle * 10)*PI) / 180;
-		double x1 = m.getPosxCube();	
+		double x1 = m.getPosxCube();
 		double x2 = posxCubeSpaceship + leftMov;
 		double y1 = m.getPosyCube();
 		double y2 = posyCubeSpaceship + up;
 		double z1 = m.getPoszCube();
 		double z2 = poszCubeSpaceship + forwardMov;
 
-		x1 = (x1 * cos(radiantAngle)) - (z1 * sin(radiantAngle));
-		z1 = (x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
 
-		double dx = x1 - x2;
+		double xrot = (x1 * cos(radiantAngle)) + (z1*sin(radiantAngle));
+		double zrot = (-x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
+
+		double dx = xrot - x2;
 		double dy = y1 - y2;
-		double dz = z1 - z2;
+		double dz = zrot - z2;
 
-		/*float dx = m.getPosxCube() - (posxCubeSpaceship + leftMov);
-		float dy = m.getPosyCube() - (posyCubeSpaceship + up);
-		float dz = m.getPoszCube() - (poszCubeSpaceship + forwardMov);*/
 		double distance = sqrt(dx * dx + dy * dy + dz * dz);
-		if (distance < sizeCubeMeteorites) {
+		if (distance <= m.getSizeCube() + sizeCubeSpaceship) {
 			return true;
 		}
+
 		iter++;
-		
+
 	}
 	return false;
-	}
+}
 
+bool checkCollisionSpaceshipWithPlanet() {
+
+	list<Planet>::iterator iter = listOfPlanet.begin();
+	while (iter != listOfPlanet.end()) {
+		Planet p = *iter;
+		/*
+		x' = xcos(a) + zsen(a)
+		y'=y
+		z'= -xsen(a)+zcos(a)
+		*/
+		double radiantAngle = (angle*PI) / 180;
+		double x1 = p.getx();
+		double x2 = posxCubeSpaceship + leftMov;
+		double y1 = p.gety();
+		double y2 = posyCubeSpaceship + up;
+		double z1 = p.getz();
+		double z2 = poszCubeSpaceship + forwardMov;
+
+
+		double xrot = (x1 * cos(radiantAngle)) + (z1*sin(radiantAngle));
+		double zrot = (-x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
+
+		double dx = xrot - x2;
+		double dy = y1 - y2;
+		double dz = zrot - z2;
+
+		double distance = sqrt(dx * dx + dy * dy + dz * dz);
+		if (distance <= p.getSize() + sizeCubeSpaceship) {
+			return true;
+		}
+
+		iter++;
+
+	}
+	return false;
+
+}
+
+bool checkCollisionMeteorWithPlanet() {
+	list<Planet>::iterator iterP = listOfPlanet.begin();
+	list<Meteorite>::iterator iterM = meteorites.begin();
+	while (iterM != meteorites.end()) {
+		Meteorite m = *iterM;
+		/*
+		x' = xcos(a) + zsen(a)
+		y'=y
+		z'= -xsen(a)+zcos(a)
+		*/
+		double radiantAngleMeteorites = ((angle * 10)*PI) / 180;
+		double radiantAnglePlanet = (angle*PI) / 180;
+		double x1 = m.getPosx();
+		double y1 = m.getPosy();
+		double z1 = m.getPosz();
+
+		double xrotMeteorites = (x1 * cos(radiantAngleMeteorites)) + (z1*sin(radiantAngleMeteorites));
+		double zrotMeteorites = (-x1 * sin(radiantAngleMeteorites)) + (z1 * cos(radiantAngleMeteorites));
+
+		while (iterP != listOfPlanet.end()) {
+			Planet p = *iterP;
+			double x2 = p.getx();
+			double y2 = p.gety();
+			double z2 = p.getz();
+
+			double xrotPlanet = (x2 * cos(radiantAnglePlanet)) + (z2*sin(radiantAnglePlanet));
+			double zrotPlanet = (-x2 * sin(radiantAnglePlanet)) + (z2 * cos(radiantAnglePlanet));
+
+			double dx = xrotMeteorites - xrotPlanet;
+			double dy = y1 - y2;
+			double dz = zrotMeteorites - xrotPlanet;
+
+			double distance = sqrt(dx * dx + dy * dy + dz * dz);
+			if (distance <= p.getSize() + m.getSizeCube()) {
+				return true;
+			}
+			iterP++;
+
+		}
+		iterP = listOfPlanet.begin();
+
+		iterM++;
+
+	}
+	return false;
+}
 
 
 void display(void) {
@@ -374,8 +494,8 @@ void display(void) {
 	//Focus to spaceship
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 	// rotate it around the y axis
-    //glRotatef(visualangle, 0.f, 1.f, 0.f);
-	
+	//glRotatef(visualangle, 0.f, 1.f, 0.f);
+
 
 	// scale the whole asset to fit into our view frustum
 	/*tmp = scene_max.x - scene_min.x;
@@ -400,13 +520,13 @@ void display(void) {
 		//recursive_render(scene, scene->mRootNode, 1.0);		
 
 		for (int i = 0; i < scene->mRootNode->mNumChildren - 5; i++) {
-				recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
+			recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
 		}
-		
+
 		glEndList();
 
 		//Lista astronave
-		glNewList(scene_list + 1, GL_COMPILE);		
+		glNewList(scene_list + 1, GL_COMPILE);
 		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
 		glEndList();
 
@@ -419,7 +539,7 @@ void display(void) {
 		glNewList(scene_list + 3, GL_COMPILE);
 		recursive_render(scene, scene->mRootNode->mChildren[10], 1.0);
 		glEndList();
-		
+
 		//Lista asteroide 3
 		glNewList(scene_list + 4, GL_COMPILE);
 		recursive_render(scene, scene->mRootNode->mChildren[11], 1.0);
@@ -435,6 +555,7 @@ void display(void) {
 			Meteorite m1(0);
 			meteorites.push_back(m1);
 
+
 			Meteorite m2(1);
 			meteorites.push_back(m2);
 
@@ -446,10 +567,10 @@ void display(void) {
 
 		}
 
-		
-		
+
+
 	}
-	
+
 	/* Non serve per ora
 	lists[0] = 0;
 	lists[1] = 1;
@@ -462,19 +583,19 @@ void display(void) {
 	glPopMatrix();
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
-	//if (!checkCollisionWithMeteor()) {
+	if (!checkCollisionWithMeteor() && !checkCollisionSpaceshipWithPlanet()) {
 		glPushMatrix();
 		glTranslated(leftMov, up, forwardMov);
 		glCallList(scene_list + 1);
 		glPopMatrix();
-	//}
+	}
 
 
 	// Iteratore per iterare sulla lista di meteoriti
-	list<Meteorite>::iterator meteoritesiter = meteorites.begin();	
+	list<Meteorite>::iterator meteoritesiter = meteorites.begin();
 
 	// Ciclo per renderizzare tutti i meteoriti
-	for (int i = 0; i < numMeteorites*4; i++) {
+	for (int i = 0; i < numMeteorites * 4; i++) {
 		// Trasformazioni sul meteorite
 		glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
@@ -482,20 +603,22 @@ void display(void) {
 		glCallList(scene_list + meteoritesiter->getSceneList());
 		glPopMatrix();
 
+
+
 		// Trasformazioni sul cubo del meteorite
+
 		/*glPushMatrix();
 		glRotatef(angle * 10, 0.f, 1.f, 0.f);
-		glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());*/
+		//glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
 		//glutSolidCube(sizeCubeMeteorites);
 		//Rendo invisibile il cubo
 		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		//glutSolidSphere(meteoritesiter->getSizeCube(),50,50);
-		
-		
-		
-		
-		
-		//glPopMatrix();
+		glTranslatef(posxCubeMeteorites+meteoritesiter->getPosx(), posyCubeMeteorites + meteoritesiter->getPosy(), poszCubeMeteorites + meteoritesiter->getPosz());
+		//glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
+		glutSolidSphere(sizeCubeMeteorites, 50, 50);
+
+		glPopMatrix();*/
+
 
 		meteoritesiter++;
 
@@ -506,14 +629,43 @@ void display(void) {
 	// Trasformazioni sul cubo dell'astronave
 	/*glPushMatrix();
 	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
-	//Rendo invisibile il cubo
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	//glutSolidCube(sizeCubeSpaceship);
-	glutSolidSphere(sizeCubeMeteorites, 50, 50);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glutSolidSphere(sizeCubeSpaceship, 50, 50);*/
+
+	//glPopMatrix();
+
+	//Collisioni pianeti
+	/*glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glTranslatef(posxPlanet, posyPlanet, poszPlanet);
+	glutSolidSphere(sizePlanet,50,50);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glTranslatef(posxEarthSphere, posyEarthSphere, poszEarthSphere);
+	glutSolidSphere(sizeEarthSphere, 50, 50);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glTranslatef(posxMoonSphere, posyMoonSphere, poszMoonSphere);
+	glutSolidSphere(sizeMoonSphere, 50, 50);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glTranslatef(posxMarsSphere, posyMarsSphere, poszMarsSphere);
+	glutSolidSphere(sizeMarsSphere, 50, 50);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glTranslatef(posxSaturnSphere, posySaturnSphere, poszSaturnSphere);
+	glutSolidSphere(sizeSaturnSphere, 50, 50);
 	glPopMatrix();*/
 
-	
+
 	glutSwapBuffers();
 	do_motion();
 }
@@ -717,7 +869,7 @@ static void keyboard(unsigned char key, int x, int y) {
 	case 27:
 		exit(1);
 		break;
-	//Movimento in avanti
+		//Movimento in avanti
 	case 'w':
 		forwardMov += 0.08;
 		//alfa += 0.08;
@@ -726,7 +878,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		//cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
-	//Movimento indietro
+		//Movimento indietro
 	case 's':
 		forwardMov -= 0.08;
 		//printf("%d", forward);
@@ -734,7 +886,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		cout << posxCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	//Movimento a sinistra
+		//Movimento a sinistra
 	case 'a':
 		leftMov += 0.08;
 		//alfa += 0.5;
@@ -743,34 +895,34 @@ static void keyboard(unsigned char key, int x, int y) {
 		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	//Movimento a destra
+		//Movimento a destra
 	case 'd':
 		leftMov -= 0.08;
 		/*posyCubeMeteorites -= 0.08;
 		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	//Up-boost
+		//Up-boost
 	case 'q':
 		up += 0.08;
 		/*poszCubeMeteorites += 0.08;
 		cout << poszCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	//Down-boost
+		//Down-boost
 	case 'e':
 		up -= 0.08;
 		/*poszCubeMeteorites -= 0.08;
 		cout << poszCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
-	//Tasti per test 
+		//Tasti per test 
 	case 'r':
 		//xprova += 0.08;
 		//cout << "posx" << xprova<<endl;
 		//ridisegna = true;
-		sizeCubeMeteorites += 0.08;
-		cout << sizeCubeMeteorites << endl;
+		posxPlanet += 0.08;
+		cout << posxPlanet << endl;
 		glutPostRedisplay();
 		break;
 	case 'f':
@@ -779,27 +931,26 @@ static void keyboard(unsigned char key, int x, int y) {
 		//xprova -= 0.08;
 		//cout << "posx" << xprova << endl;
 		//ridisegna = true;
-		sizeCubeMeteorites -= 0.08;
-		cout << sizeCubeMeteorites << endl;
+		posxPlanet -= 0.08;
+		cout << posxPlanet << endl;
 		glutPostRedisplay();
 		break;
 	case 't':
 		/*spinmov -= 0.8;
 		centery += 0.125;*/
 		//zprova += 0.8;
-		sizeCubeMeteorites += 0.08;
-		cout << "Dimensione " << sizeCubeMeteorites<<endl;
-		
-		//ridisegna = true;
+		posyPlanet += 0.08;
+		cout << posyPlanet << endl;
+
 		glutPostRedisplay();
 		break;
 	case 'g':
 		/*spinmov -= 0.8;
 		centery -= 0.125;*/
 		//zprova -= 0.8;
-		sizeCubeMeteorites -= 0.08;
-		cout << "Dimensione " << sizeCubeMeteorites << endl;
-		//ridisegna = true;
+		posyPlanet -= 0.08;
+		cout << posyPlanet << endl;
+
 		glutPostRedisplay();
 		break;
 	case 'y':
@@ -807,8 +958,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		//centerx += 0.125;
 		//eyex += 0.125;
 		//ridisegna = true;
-		poszCubeMeteorites += 0.08;
-		cout << poszCubeMeteorites << endl;
+		poszPlanet += 0.08;
+		cout << poszPlanet << endl;
 		glutPostRedisplay();
 		break;
 	case 'h':
@@ -816,13 +967,20 @@ static void keyboard(unsigned char key, int x, int y) {
 		//centerx -= 0.125;
 		//eyex -= 0.125;
 		//ridisegna = true;
-		poszCubeMeteorites -= 0.08;
-		cout << poszCubeMeteorites << endl;
+		poszPlanet -= 0.08;
+		cout << poszPlanet << endl;
 		glutPostRedisplay();
 		break;
+	case 'i':
+		sizePlanet += 0.08;
+		cout << sizePlanet << endl;
+		break;
+	case 'k':
+		sizePlanet -= 0.08;
+		cout << sizePlanet << endl;
+		break;
 	case'u':
-		startingGame = true;
-		visualangle = 0;
+		angle -= 0.90;
 		glutPostRedisplay();
 		break;
 	default:
@@ -832,22 +990,30 @@ static void keyboard(unsigned char key, int x, int y) {
 
 void startGame(int choice) {
 	switch (choice) {
-	//Avvia gioco
+		//Avvia gioco
 	case 1:
 		startingGame = true;
 		visualangle = 0;
 		break;
-	//Tutorial
+		//Tutorial
 	case 2:
 		break;
-	
+
 	}
 }
 
 
+void initPlanet() {
+	listOfPlanet.push_back(earth);
+	listOfPlanet.push_back(moon);
+	listOfPlanet.push_back(mars);
+	listOfPlanet.push_back(saturn);
+}
 
 
 int main(int argc, char **argv) {
+
+	initPlanet();
 
 	struct aiLogStream stream;
 	glutInitWindowSize(900, 600);
@@ -873,18 +1039,18 @@ int main(int argc, char **argv) {
 	// qui invocheremo la scena del gioco!
 	/*
 	if (argc >= 2)
-		loadasset(argv[1]);
+	loadasset(argv[1]);
 	else
 	{
-		fprintf(stderr, "usage: >>SimpleOpenGLTexturedLoader <modelpath\\modelname>");
-		exit(1);
+	fprintf(stderr, "usage: >>SimpleOpenGLTexturedLoader <modelpath\\modelname>");
+	exit(1);
 	}
-	
-	
+
+
 	*/
 
 	loadasset("models\\scenario.obj");
-	
+
 
 	if (!InitGL()) {
 		fprintf(stderr, "Initialization failed");

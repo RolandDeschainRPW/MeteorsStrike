@@ -29,5 +29,8 @@
     <ClInclude Include="..\Meteor%27s Strike\Spaceship.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="..\Meteor%27s Strike\Planet.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

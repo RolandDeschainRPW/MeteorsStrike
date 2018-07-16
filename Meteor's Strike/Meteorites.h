@@ -19,7 +19,7 @@ class Meteorite {
 	float xmeteorite;
 	float ymeteorite;
 	float zmeteorite;
-	
+
 	// Valori cubo per collisioni meteoriti
 	double sizeCubeMeteorites;
 	float posxCubeMeteorites;
@@ -28,6 +28,9 @@ class Meteorite {
 
 	//Indice scene_list per visualizzazione
 	int scene_listNum;
+
+	// Se il meteorite si scontra con un pianeta non lo visualizzo
+	bool visualizza;
 
 public:
 	Meteorite(int selMeteor);
@@ -38,5 +41,9 @@ public:
 	float getPosyCube();
 	float getPoszCube();
 	double getSizeCube();
+	void setSizeCube(double size);
+	int getIndex();
 	int getSceneList();
+	void destroyed();
+	bool isDestroyed();
 };

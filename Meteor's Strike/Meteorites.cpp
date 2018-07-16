@@ -17,24 +17,26 @@ Meteorite::Meteorite(int selMeteor) {
 	this->ymeteorite = random();
 	this->zmeteorite = random();
 
+	visualizza = true;
+
 	switch (selMeteor) {
 	case 0:
-		sizeCubeMeteorites = 1.2;
-		posxCubeMeteorites = -17.6;
-		posyCubeMeteorites = 0;
-		poszCubeMeteorites = 10.96;
+		sizeCubeMeteorites = 0.60;
+		posxCubeMeteorites = -17.52;
+		posyCubeMeteorites = 0.16;
+		poszCubeMeteorites = 10.88;
 		scene_listNum = 2;
 		break;
 	case 1:
 		sizeCubeMeteorites = 0.36;
 		posxCubeMeteorites = -20.64;
 		posyCubeMeteorites = 0.24;
-		poszCubeMeteorites =14.4;
+		poszCubeMeteorites = 14.4;
 		scene_listNum = 3;
 		break;
 
 	case 2:
-		sizeCubeMeteorites = 0.72;
+		sizeCubeMeteorites = 0.90;
 		posxCubeMeteorites = -20.56;
 		posyCubeMeteorites = 0.08;
 		poszCubeMeteorites = 11.04;
@@ -43,7 +45,7 @@ Meteorite::Meteorite(int selMeteor) {
 	case 3:
 		sizeCubeMeteorites = 0.64;
 		posxCubeMeteorites = -17.2;
-		posyCubeMeteorites = 0.08;
+		posyCubeMeteorites = 0.16;
 		poszCubeMeteorites = 14.8;
 		scene_listNum = 5;
 		break;
@@ -58,7 +60,7 @@ float Meteorite::getPosy() {
 	return this->ymeteorite;
 }
 
-float Meteorite::getPosz(){
+float Meteorite::getPosz() {
 	return this->zmeteorite;
 }
 
@@ -79,4 +81,20 @@ double Meteorite::getSizeCube() {
 
 int Meteorite::getSceneList() {
 	return this->scene_listNum;
+}
+
+void Meteorite::setSizeCube(double size) {
+	this->sizeCubeMeteorites = size;
+}
+
+int Meteorite::getIndex() {
+	return this->scene_listNum - 2;
+}
+
+void Meteorite::destroyed() {
+	this->visualizza = false;
+}
+
+bool Meteorite::isDestroyed() {
+	return this->visualizza;
 }
