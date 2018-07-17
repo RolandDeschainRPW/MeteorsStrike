@@ -68,7 +68,7 @@ static float centery = -0.25f;
 static float centerz = 0.75f;
 
 //Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
-static int numMeteorites = 100;
+static int numMeteorites = 2;
 
 //Booleano per moltiplicazione avvenuta
 //Inizialmente settata a true, così l'incremento avverrà
@@ -359,8 +359,8 @@ void do_motion(void) {
 		static GLint prev_time = 0;
 		int time = glutGet(GLUT_ELAPSED_TIME);
 		if (startingGame) {
-			//angle -= (time - prev_time)*0.002;
-			angle -= 0.08;
+			angle -= (time - prev_time)*0.002;
+			//angle -= 0.08;
 		}
 		else
 			//visualangle -= (time - prev_time)*0.002;
@@ -586,6 +586,12 @@ void display(void) {
 
 
 
+	}
+	
+	cout << (angle * 10) << " " << (int) (angle * 10)% 360<<endl;
+	cout << multiplied << endl;
+	if((int)(angle * 10) % 360 < -10 && !multiplied){
+		cout << "Giro completo dei meteoriti"<<endl;
 	}
 
 	// Incrementa il numero di meteoriti
