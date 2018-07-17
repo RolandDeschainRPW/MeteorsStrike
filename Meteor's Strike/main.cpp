@@ -147,9 +147,40 @@ static int damagedFrames = 200;
 //Fine gioco (vittoria)
 bool win = false;
 
+//Drawing text on screen
+void drawString(int x, int y, char *string) {
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	int w = glutGet(GLUT_WINDOW_WIDTH);
+	int h = glutGet(GLUT_WINDOW_HEIGHT);
+	glOrtho(0, w, 0, h, -1, 1);
 
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
 
+	glDisable(GL_DEPTH_TEST);
 
+	glDisable(GL_LIGHTING);
+	glColor3f(0.0, 1.0, 0.0);
+
+	glRasterPos2i(x, y);
+	void *font = GLUT_BITMAP_HELVETICA_18;
+	for (char* c = string; *c != '\0'; c++)
+	{
+		glutBitmapCharacter(font, *c);
+	}
+
+	glEnable(GL_LIGHTING);
+
+	glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+}
 
 void reshape(int width, int height) {
 
@@ -565,289 +596,292 @@ void resetGame() {
 
 void display(void) {
 	if (!win) {
-	// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
-	if (angle < -360) angle += 360;
+		// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
+		if (angle < -360) angle += 360;
 
-	// Verifica se i meteoriti hanno effettuato un giro completo
-	if ((int)(angle * 10) % 360 > -20) {
-		if (angle != 0)
-			cout << "Giro completo dei meteoriti!" << endl;
-		lapDone = true;
-	}
-	else lapDone = false;
+		// Verifica se i meteoriti hanno effettuato un giro completo
+		if ((int)(angle * 10) % 360 > -20) {
+			if (angle != 0)
+				cout << "Giro completo dei meteoriti!" << endl;
+			lapDone = true;
+		}
+		else lapDone = false;
 
-	float tmp;
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	//gluLookAt(0.f, 0.f, 3.f, 0.f, 0.f, -5.f, 0.f, 1.f, 0.f);
-	//gluLookAt(11.0f, 0.0f, 11.0f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
-	//printf("a:%f\t b:%f\t c:%f\t d:%f\t e:%f\t f:%f\n", eyex, eyey, eyez,centerx,centery,centerz);
-	//Focus to spaceship
-	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
-	// rotate it around the y axis
-	glRotatef(visualangle, 0.f, 1.f, 0.f);
-
-
-	// scale the whole asset to fit into our view frustum
-	/*tmp = scene_max.x - scene_min.x;
-	tmp = aisgl_max(scene_max.y - scene_min.y, tmp);
-	tmp = aisgl_max(scene_max.z - scene_min.z, tmp);
-	tmp = 1.f / tmp;
-	glScalef(tmp, tmp, tmp);*/
-
-	// center the model
-	glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
+		float tmp;
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		//gluLookAt(0.f, 0.f, 3.f, 0.f, 0.f, -5.f, 0.f, 1.f, 0.f);
+		//gluLookAt(11.0f, 0.0f, 11.0f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
+		//printf("a:%f\t b:%f\t c:%f\t d:%f\t e:%f\t f:%f\n", eyex, eyey, eyez,centerx,centery,centerz);
+		//Focus to spaceship
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
+		// rotate it around the y axis
+		glRotatef(visualangle, 0.f, 1.f, 0.f);
 
 
-	// if the display list has not been made yet, create a new one and
-	// fill it with scene contents
-	if (scene_list == 0) {
-		scene_list = glGenLists(6);
-		glNewList(scene_list, GL_COMPILE);
+		// scale the whole asset to fit into our view frustum
+		/*tmp = scene_max.x - scene_min.x;
+		tmp = aisgl_max(scene_max.y - scene_min.y, tmp);
+		tmp = aisgl_max(scene_max.z - scene_min.z, tmp);
+		tmp = 1.f / tmp;
+		glScalef(tmp, tmp, tmp);*/
 
-		// now begin at the root node of the imported data and traverse
-		// the scenegraph by multiplying subsequent local transforms
-		// together on GL's matrix stack.
-		//recursive_render(scene, scene->mRootNode, 1.0);		
+		// center the model
+		glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
 
-		for (int i = 0; i < scene->mRootNode->mNumChildren - 5; i++) {
-			recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
+
+		// if the display list has not been made yet, create a new one and
+		// fill it with scene contents
+		if (scene_list == 0) {
+			scene_list = glGenLists(6);
+			glNewList(scene_list, GL_COMPILE);
+
+			// now begin at the root node of the imported data and traverse
+			// the scenegraph by multiplying subsequent local transforms
+			// together on GL's matrix stack.
+			//recursive_render(scene, scene->mRootNode, 1.0);		
+
+			for (int i = 0; i < scene->mRootNode->mNumChildren - 5; i++) {
+				recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
+			}
+
+			glEndList();
+
+			//Lista astronave
+			glNewList(scene_list + 1, GL_COMPILE);
+			recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
+			glEndList();
+
+			//Lista asteroide 1
+			glNewList(scene_list + 2, GL_COMPILE);
+			recursive_render(scene, scene->mRootNode->mChildren[9], 1.0);
+			glEndList();
+
+			//Lista asteroide 2
+			glNewList(scene_list + 3, GL_COMPILE);
+			recursive_render(scene, scene->mRootNode->mChildren[10], 1.0);
+			glEndList();
+
+			//Lista asteroide 3
+			glNewList(scene_list + 4, GL_COMPILE);
+			recursive_render(scene, scene->mRootNode->mChildren[11], 1.0);
+			glEndList();
+
+			//Lista asteroide 4
+			glNewList(scene_list + 5, GL_COMPILE);
+			recursive_render(scene, scene->mRootNode->mChildren[12], 1.0);
+			glEndList();
+
+
+			// Calcolo posizioni meteoriti
+			for (int i = 0; i < numMeteorites; i++) {
+				Meteorite m1(0);
+				meteorites.push_back(m1);
+
+				Meteorite m2(1);
+				meteorites.push_back(m2);
+
+				Meteorite m3(2);
+				meteorites.push_back(m3);
+
+				Meteorite m4(3);
+				meteorites.push_back(m4);
+
+			}
+
+
+
 		}
 
-		glEndList();
+		//cout << (angle * 10) << " " << (int)(angle * 10) % 360 << endl;
 
-		//Lista astronave
-		glNewList(scene_list + 1, GL_COMPILE);
-		recursive_render(scene, scene->mRootNode->mChildren[8], 1.0);
-		glEndList();
+		// Incrementa il numero di meteoriti
+		if (lapDone && !multiplied) {
+			//Pulisci la lista dei meteoriti
+			meteorites.clear();
 
-		//Lista asteroide 1
-		glNewList(scene_list + 2, GL_COMPILE);
-		recursive_render(scene, scene->mRootNode->mChildren[9], 1.0);
-		glEndList();
+			//Incrementa i meteoriti
+			numMeteorites += 4;
 
-		//Lista asteroide 2
-		glNewList(scene_list + 3, GL_COMPILE);
-		recursive_render(scene, scene->mRootNode->mChildren[10], 1.0);
-		glEndList();
+			// Calcolo posizioni meteoriti
+			for (int i = 0; i < numMeteorites; i++) {
+				Meteorite m1(0);
+				meteorites.push_back(m1);
 
-		//Lista asteroide 3
-		glNewList(scene_list + 4, GL_COMPILE);
-		recursive_render(scene, scene->mRootNode->mChildren[11], 1.0);
-		glEndList();
+				Meteorite m2(1);
+				meteorites.push_back(m2);
 
-		//Lista asteroide 4
-		glNewList(scene_list + 5, GL_COMPILE);
-		recursive_render(scene, scene->mRootNode->mChildren[12], 1.0);
-		glEndList();
+				Meteorite m3(2);
+				meteorites.push_back(m3);
 
+				Meteorite m4(3);
+				meteorites.push_back(m4);
 
-		// Calcolo posizioni meteoriti
-		for (int i = 0; i < numMeteorites; i++) {
-			Meteorite m1(0);
-			meteorites.push_back(m1);
-
-			Meteorite m2(1);
-			meteorites.push_back(m2);
-
-			Meteorite m3(2);
-			meteorites.push_back(m3);
-
-			Meteorite m4(3);
-			meteorites.push_back(m4);
-
+			}
+			multiplied = true;
+			//cout << "Incremento dei meteoriti!" << endl;
 		}
+		else if (!lapDone) multiplied = false;
 
-
-
-	}
-
-	//cout << (angle * 10) << " " << (int)(angle * 10) % 360 << endl;
-
-	// Incrementa il numero di meteoriti
-	if (lapDone && !multiplied) {
-		//Pulisci la lista dei meteoriti
-		meteorites.clear();
-
-		//Incrementa i meteoriti
-		numMeteorites += 4;
-
-		// Calcolo posizioni meteoriti
-		for (int i = 0; i < numMeteorites; i++) {
-			Meteorite m1(0);
-			meteorites.push_back(m1);
-
-			Meteorite m2(1);
-			meteorites.push_back(m2);
-
-			Meteorite m3(2);
-			meteorites.push_back(m3);
-
-			Meteorite m4(3);
-			meteorites.push_back(m4);
-
-		}
-		multiplied = true;
-		//cout << "Incremento dei meteoriti!" << endl;
-	}
-	else if (!lapDone) multiplied = false;
-
-	/* Non serve per ora
+		/* Non serve per ora
 		lists[0] = 0;
 		lists[1] = 1;
 		glListBase(scene_list);*/
 
 		//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
-	glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glCallList(scene_list);
-	glPopMatrix();
-
-	if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
-		damaged = true;
-		lives--;
-		// Fine gioco
-		if (lives == 0)
-			resetGame();
-	}
-
-	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
-	if (!damaged) {
 		glPushMatrix();
-		glTranslated(leftMov, up, forwardMov);
-		glCallList(scene_list + 1);
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glCallList(scene_list);
 		glPopMatrix();
-	}
-	else {
-		bool show = showSpaceship();
 
-		if (!show) {
-			damagedFrames--;
+		if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
+			damaged = true;
+			lives--;
+			// Fine gioco
+			if (lives == 0)
+				resetGame();
 		}
-		else {
+
+		//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
+		if (!damaged) {
 			glPushMatrix();
 			glTranslated(leftMov, up, forwardMov);
 			glCallList(scene_list + 1);
 			glPopMatrix();
-			damagedFrames--;
-			if (damagedFrames == 0) {
-				damaged = false;
-				damagedFrames = 200;
+		}
+		else {
+			bool show = showSpaceship();
+
+			if (!show) {
+				damagedFrames--;
+			}
+			else {
+				glPushMatrix();
+				glTranslated(leftMov, up, forwardMov);
+				glCallList(scene_list + 1);
+				glPopMatrix();
+				damagedFrames--;
+				if (damagedFrames == 0) {
+					damaged = false;
+					damagedFrames = 200;
+				}
 			}
 		}
-	}
 
 
-	// Iteratore per iterare sulla lista di meteoriti
-	list<Meteorite>::iterator meteoritesiter = meteorites.begin();
+		// Iteratore per iterare sulla lista di meteoriti
+		list<Meteorite>::iterator meteoritesiter = meteorites.begin();
 
-	// Ciclo per renderizzare tutti i meteoriti
-	for (int i = 0; i < numMeteorites * 4; i++) {
-		// Trasformazioni sul meteorite
-		glPushMatrix();
-		glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
-		glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
-		glCallList(scene_list + meteoritesiter->getSceneList());
+		// Ciclo per renderizzare tutti i meteoriti
+		for (int i = 0; i < numMeteorites * 4; i++) {
+			// Trasformazioni sul meteorite
+			glPushMatrix();
+			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
+			glCallList(scene_list + meteoritesiter->getSceneList());
+			glPopMatrix();
+
+
+
+			// Trasformazioni sul cubo del meteorite
+
+			/*glPushMatrix();
+			glRotatef(angle * 10, 0.f, 1.f, 0.f);
+			//glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
+			//glutSolidCube(sizeCubeMeteorites);
+			//Rendo invisibile il cubo
+			//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+			glTranslatef(posxCubeMeteorites+meteoritesiter->getPosx(), posyCubeMeteorites + meteoritesiter->getPosy(), poszCubeMeteorites + meteoritesiter->getPosz());
+			//glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
+			glutSolidSphere(sizeCubeMeteorites, 50, 50);
+
+			glPopMatrix();*/
+
+
+			meteoritesiter++;
+
+		}
+
+		meteoritesiter = meteorites.begin();
+
+		// Trasformazioni sul cubo dell'astronave
+		/*glPushMatrix();
+		glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
+		//glutSolidCube(sizeCubeSpaceship);
+		glutSolidSphere(sizeCubeSpaceship, 50, 50);*/
+
+		//glPopMatrix();
+
+		//Collisioni pianeti
+		/*glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glTranslatef(posxPlanet, posyPlanet, poszPlanet);
+		glutSolidSphere(sizePlanet,50,50);
 		glPopMatrix();
 
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glTranslatef(posxEarthSphere, posyEarthSphere, poszEarthSphere);
+		glutSolidSphere(sizeEarthSphere, 50, 50);
+		glPopMatrix();
 
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glTranslatef(posxMoonSphere, posyMoonSphere, poszMoonSphere);
+		glutSolidSphere(sizeMoonSphere, 50, 50);
+		glPopMatrix();
+			
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glTranslatef(posxMarsSphere, posyMarsSphere, poszMarsSphere);
+		glutSolidSphere(sizeMarsSphere, 50, 50);
+		glPopMatrix();
 
-		// Trasformazioni sul cubo del meteorite
-
-		/*glPushMatrix();
-		glRotatef(angle * 10, 0.f, 1.f, 0.f);
-		//glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
-		//glutSolidCube(sizeCubeMeteorites);
-		//Rendo invisibile il cubo
-		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		glTranslatef(posxCubeMeteorites+meteoritesiter->getPosx(), posyCubeMeteorites + meteoritesiter->getPosy(), poszCubeMeteorites + meteoritesiter->getPosz());
-		//glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
-		glutSolidSphere(sizeCubeMeteorites, 50, 50);
-
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glTranslatef(posxSaturnSphere, posySaturnSphere, poszSaturnSphere);
+		glutSolidSphere(sizeSaturnSphere, 50, 50);
 		glPopMatrix();*/
 
-
-		meteoritesiter++;
-
-	}
-
-	meteoritesiter = meteorites.begin();
-
-	// Trasformazioni sul cubo dell'astronave
-	/*glPushMatrix();
-	glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
-	//glutSolidCube(sizeCubeSpaceship);
-	glutSolidSphere(sizeCubeSpaceship, 50, 50);*/
-
-	//glPopMatrix();
-
-	//Collisioni pianeti
-	/*glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glTranslatef(posxPlanet, posyPlanet, poszPlanet);
-	glutSolidSphere(sizePlanet,50,50);
-	glPopMatrix();
-
-	glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glTranslatef(posxEarthSphere, posyEarthSphere, poszEarthSphere);
-	glutSolidSphere(sizeEarthSphere, 50, 50);
-	glPopMatrix();
-
-	glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glTranslatef(posxMoonSphere, posyMoonSphere, poszMoonSphere);
-	glutSolidSphere(sizeMoonSphere, 50, 50);
-	glPopMatrix();
-
-	glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glTranslatef(posxMarsSphere, posyMarsSphere, poszMarsSphere);
-	glutSolidSphere(sizeMarsSphere, 50, 50);
-	glPopMatrix();
-
-	glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glTranslatef(posxSaturnSphere, posySaturnSphere, poszSaturnSphere);
-	glutSolidSphere(sizeSaturnSphere, 50, 50);
-	glPopMatrix();*/
-
-}else {
-	//Fine gioco, movimento videocamera finale
-	if (eyex < 10) {
-		eyex += 0.08;
-	}
-	eyez += 0.08;
+	} else {
+		//Fine gioco, movimento videocamera finale
+		if (eyex < 10) {
+			eyex += 0.08;
+		}
+		eyez += 0.08;
 
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 	
-	//Focus to spaceship
-	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
+		//Focus to spaceship
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 
-	// center the model
-	glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
+		// center the model
+		glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
 
-	//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
-	glPushMatrix();
-	glRotatef(angle, 0.f, 1.f, 0.f);
-	glCallList(scene_list);
-	glPopMatrix();
+		//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glCallList(scene_list);
+		glPopMatrix();
 
-	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
+		//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
 
-	glPushMatrix();
-	glTranslated(leftMov, up, forwardMov);
-	glCallList(scene_list + 1);
-	glPopMatrix();
+		glPushMatrix();
+		glTranslated(leftMov, up, forwardMov);
+		glCallList(scene_list + 1);
+		glPopMatrix();
 
-	if (eyez > 5) {
-		resetGame();
+		if (eyez > 5) {
+			resetGame();
+		}
 	}
-}
+	char trial[] = "Trallallero Trallala!";
+	drawString(20, 20, trial);
+	
 	glutSwapBuffers();
 	do_motion();
 }
