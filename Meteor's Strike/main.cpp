@@ -135,6 +135,19 @@ list<Planet> listOfPlanet;
 // Flag per inizio gioco
 bool startingGame = false;
 
+// Vite astronave
+int lifes = 3;
+
+//booleano per danneggiamento
+bool damaged = false;
+
+//Frame danneggiamento
+static int damagedFrames = 200;
+
+//Fine gioco (vittoria)
+bool win = false;
+
+
 
 
 
@@ -494,19 +507,75 @@ bool checkCollisionMeteorWithPlanet() {
 	return false;
 }
 
+bool showSpaceship() {
+	int num = 190;
+	while (num != 10) {
+		if (damagedFrames >= num && damagedFrames<num + 10) {
+			return false;
+		}
+		num -= 20;
+	}
+	return true;
+}
+
+void resetGame() {
+	//Resetto variabili al loro valore iniziale
+	angle = 0.f;
+	visualangle = 0.f;
+
+	forwardMov = 0.0;
+	leftMov = 0.0;
+	backward = 0.0;
+	alfa = 0.0;
+	up = 0.0;
+
+	eyex = -18.0f;
+	eyey = 4.0f;
+	eyez = -8.875f;
+	centerx = -18.0f;
+	centery = -0.25f;
+	centerz = 0.75f;
+
+	
+	numMeteorites = 2;
+
+	lapDone = false;
+
+	multiplied = true;
+
+	//Svuoto la lista dei meteoriti
+	meteorites.clear();
+
+	//Cancello display list
+	glDeleteLists(scene_list, 6);
+
+	scene_list = 0;
+
+	startingGame = false;
+
+	lifes = 3;
+
+	damaged = false;
+
+	damagedFrames = 200;
+
+	win = false;
+}
+
 
 void display(void) {
-
+	if (!win) {
 	// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
 	if (angle < -360) angle += 360;
 
 	// Verifica se i meteoriti hanno effettuato un giro completo
 	if ((int)(angle * 10) % 360 > -20) {
-		if (angle != 0) 
+		if (angle != 0)
 			cout << "Giro completo dei meteoriti!" << endl;
 		lapDone = true;
-	} else lapDone = false;
-	
+	}
+	else lapDone = false;
+
 	float tmp;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -593,9 +662,9 @@ void display(void) {
 
 
 	}
-	
-	cout << (angle * 10) << " " << (int) (angle * 10) % 360 << endl;
-	
+
+	//cout << (angle * 10) << " " << (int)(angle * 10) % 360 << endl;
+
 	// Incrementa il numero di meteoriti
 	if (lapDone && !multiplied) {
 		//Pulisci la lista dei meteoriti
@@ -621,25 +690,49 @@ void display(void) {
 		}
 		multiplied = true;
 		cout << "Incremento dei meteoriti!" << endl;
-	} else if (!lapDone) multiplied = false;
+	}
+	else if (!lapDone) multiplied = false;
 
-/* Non serve per ora
-	lists[0] = 0;
-	lists[1] = 1;
-	glListBase(scene_list);*/
+	/* Non serve per ora
+		lists[0] = 0;
+		lists[1] = 1;
+		glListBase(scene_list);*/
 
-	//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
+		//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
 	glPushMatrix();
 	glRotatef(angle, 0.f, 1.f, 0.f);
 	glCallList(scene_list);
 	glPopMatrix();
 
+	if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
+		damaged = true;
+		lifes--;
+	}
+
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
-	if (!checkCollisionWithMeteor() && !checkCollisionSpaceshipWithPlanet()) {
+	if (!damaged) {
 		glPushMatrix();
 		glTranslated(leftMov, up, forwardMov);
 		glCallList(scene_list + 1);
 		glPopMatrix();
+	}
+	else {
+		bool show = showSpaceship();
+
+		if (!show) {
+			damagedFrames--;
+		}
+		else {
+			glPushMatrix();
+			glTranslated(leftMov, up, forwardMov);
+			glCallList(scene_list + 1);
+			glPopMatrix();
+			damagedFrames--;
+			if (damagedFrames == 0) {
+				damaged = false;
+				damagedFrames = 200;
+			}
+		}
 	}
 
 
@@ -717,7 +810,41 @@ void display(void) {
 	glutSolidSphere(sizeSaturnSphere, 50, 50);
 	glPopMatrix();*/
 
+}else {
+	//Fine gioco, movimento videocamera finale
+	if (eyex < 10) {
+		eyex += 0.08;
+	}
+	eyez += 0.08;
 
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	//Focus to spaceship
+	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
+
+	// center the model
+	glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
+
+	//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
+	glPushMatrix();
+	glRotatef(angle, 0.f, 1.f, 0.f);
+	glCallList(scene_list);
+	glPopMatrix();
+
+	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
+
+	glPushMatrix();
+	glTranslated(leftMov, up, forwardMov);
+	glCallList(scene_list + 1);
+	glPopMatrix();
+
+	if (eyez > 5) {
+		resetGame();
+	}
+}
 	glutSwapBuffers();
 	do_motion();
 }
@@ -1032,8 +1159,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		cout << sizePlanet << endl;
 		break;
 	case'u':
-		offsetAngleMeteorites -= 0.08;
-		cout << offsetAngleMeteorites << endl;
+		win = true;
 		glutPostRedisplay();
 		break;
 	default:
