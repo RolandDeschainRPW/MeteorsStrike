@@ -70,10 +70,12 @@ static float centerz = 0.75f;
 //Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
 static int numMeteorites = 2;
 
-//Booleano per moltiplicazione avvenuta
-//Inizialmente settata a true, così l'incremento avverrà
-//solo dopo il primo giro di 360 gradi
-bool multiplied = true;
+//Booleano per segnalare un giro effettuato dai meteoriti
+static bool lapDone = false;
+
+//Booleano per segnalare l'incremento avvenuto dei meteoriti
+//settato a true per non incrementare al primo giro
+static bool multiplied = true;
 
 //Lista meteoriti
 list<Meteorite> meteorites;
@@ -495,12 +497,16 @@ bool checkCollisionMeteorWithPlanet() {
 
 void display(void) {
 
-	// Mantiene la rotazione nel periodo 0-360 e resetta il booleano muiltiplied
-	if (angle < -360) {
-		multiplied = false;
-		angle += 360;
-	}
+	// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
+	if (angle < -360) angle += 360;
 
+	// Verifica se i meteoriti hanno effettuato un giro completo
+	if ((int)(angle * 10) % 360 > -20) {
+		if (angle != 0) 
+			cout << "Giro completo dei meteoriti!" << endl;
+		lapDone = true;
+	} else lapDone = false;
+	
 	float tmp;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -588,17 +594,10 @@ void display(void) {
 
 	}
 	
-	cout << (angle * 10) << " " << (int) (angle * 10)% 360<<endl;
-	cout << multiplied << endl;
-	if((int)(angle * 10) % 360 < -10 && !multiplied){
-		cout << "Giro completo dei meteoriti"<<endl;
-	}
-
+	cout << (angle * 10) << " " << (int) (angle * 10) % 360 << endl;
+	
 	// Incrementa il numero di meteoriti
-	if ((int)angle % 360 < -10 && !multiplied) {
-
-		multiplied = true;
-
+	if (lapDone && !multiplied) {
 		//Pulisci la lista dei meteoriti
 		meteorites.clear();
 
@@ -620,7 +619,9 @@ void display(void) {
 			meteorites.push_back(m4);
 
 		}
-	}
+		multiplied = true;
+		cout << "Incremento dei meteoriti!" << endl;
+	} else if (!lapDone) multiplied = false;
 
 /* Non serve per ora
 	lists[0] = 0;
