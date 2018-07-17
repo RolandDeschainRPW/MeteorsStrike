@@ -136,7 +136,7 @@ list<Planet> listOfPlanet;
 bool startingGame = false;
 
 // Vite astronave
-int lifes = 3;
+int lives = 3;
 
 //booleano per danneggiamento
 bool damaged = false;
@@ -553,7 +553,7 @@ void resetGame() {
 
 	startingGame = false;
 
-	lifes = 3;
+	lives = 3;
 
 	damaged = false;
 
@@ -706,7 +706,7 @@ void display(void) {
 
 	if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
 		damaged = true;
-		lifes--;
+		lives--;
 	}
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
