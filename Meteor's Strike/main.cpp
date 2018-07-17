@@ -689,7 +689,7 @@ void display(void) {
 
 		}
 		multiplied = true;
-		cout << "Incremento dei meteoriti!" << endl;
+		//cout << "Incremento dei meteoriti!" << endl;
 	}
 	else if (!lapDone) multiplied = false;
 
@@ -707,6 +707,9 @@ void display(void) {
 	if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
 		damaged = true;
 		lives--;
+		// Fine gioco
+		if (lives == 0)
+			resetGame();
 	}
 
 	//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
@@ -1050,7 +1053,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 		//Movimento in avanti
 	case 'w':
-		forwardMov += 0.08;
+		if(startingGame)
+			forwardMov += 0.08;
 		//alfa += 0.08;
 		//printf("%d", forward);
 		//posxCubeMeteorites += 0.08;
@@ -1059,7 +1063,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 		//Movimento indietro
 	case 's':
-		forwardMov -= 0.08;
+		if (startingGame)
+			forwardMov -= 0.08;
 		//printf("%d", forward);
 		/*posxCubeMeteorites -= 0.08;
 		cout << posxCubeMeteorites << endl;*/
@@ -1067,7 +1072,8 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 		//Movimento a sinistra
 	case 'a':
-		leftMov += 0.08;
+		if (startingGame)
+			leftMov += 0.08;
 		//alfa += 0.5;
 		//printf("%d", left);
 		/*posyCubeMeteorites += 0.08;
@@ -1076,21 +1082,24 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 		//Movimento a destra
 	case 'd':
-		leftMov -= 0.08;
+		if (startingGame)
+			leftMov -= 0.08;
 		/*posyCubeMeteorites -= 0.08;
 		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 		//Up-boost
 	case 'q':
-		up += 0.08;
+		if (startingGame)
+			up += 0.08;
 		/*poszCubeMeteorites += 0.08;
 		cout << poszCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 		//Down-boost
 	case 'e':
-		up -= 0.08;
+		if (startingGame)
+			up -= 0.08;
 		/*poszCubeMeteorites -= 0.08;
 		cout << poszCubeMeteorites << endl;*/
 		glutPostRedisplay();
