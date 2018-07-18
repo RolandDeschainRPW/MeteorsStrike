@@ -212,6 +212,37 @@ void drawString(int x, int y, char *string) {
 	glPopMatrix();
 }
 
+void drawStringV2(int x, int y, char *string) {
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth(3.0);
+
+	int w = glutGet(GLUT_WINDOW_WIDTH);
+	int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, w, 0, h);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glPushMatrix();
+	glTranslatef(x, y, 0); //Translates the character object with its axis of rotation
+						   //glRotatef(angle, 0.0, 0.0, 1.0);//Rotates the characters about z-axis 
+						   //by angle degree
+						   //glTranslatef(-700,0,0); //translates the character object 
+						   //by 700 unit to the -ve x-axis
+	for (int i = 0; i < strlen(string); i++) {
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, string[i]);
+	}
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+}
+
 void reshape(int width, int height) {
 
 	const double aspectRatio = (float)width / height, fieldOfView = 45.0;
@@ -984,7 +1015,9 @@ void display(void) {
 
 	//In alto al centro
 	drawString((w / 2), (h - 50), levelStr);
-	
+	//char trial[] = "Trallala";
+	//drawStringV2(50, 50, trial);
+
 	glutSwapBuffers();
 	do_motion();
 }
