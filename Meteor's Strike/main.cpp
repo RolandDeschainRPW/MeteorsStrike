@@ -156,9 +156,9 @@ bool lost = false;
 int framesAfterLost = 600;
 
 //Stringhe da visualizzare a schermo
-char scoreStr[30] = "";
-char livesStr[30] = "";
-char levelStr[30] = "";
+static char scoreStr[30] = "";
+static char livesStr[30] = "";
+static char levelStr[30] = "";
 
 //Punteggio
 int score = 0;
@@ -166,9 +166,10 @@ time_t startTime;
 
 //Aggiorna il punteggio
 void updateScore() {
-	if (startingGame) {
+	if (startingGame && !win && !lost) {
 		time_t currentTime = time(0);
-		score = 1000 * (currentTime - startTime);
+		score = 100 * (currentTime - startTime);
+
 		sprintf_s(scoreStr, "SCORE: %d", score);
 	}
 }
@@ -617,6 +618,12 @@ void resetGame() {
 	lost = false;
 
 	framesAfterLost = 200;
+
+	score = 0;
+	
+	sprintf_s(scoreStr, "", "");
+	sprintf_s(livesStr, "", "");
+	sprintf_s(levelStr, "", "");
 
 	glutPostRedisplay();
 }
@@ -1303,17 +1310,22 @@ void startGame(int choice) {
 	switch (choice) {
 		//Avvia gioco
 	case 1:
-		startingGame = true;
-		visualangle = 0;
-		score = 0;
-		//Inizializzazione scritte a schermo
-		sprintf_s(scoreStr, "SCORE: %d", score);
-		sprintf_s(livesStr, "LIVES: %d", lives);
-		sprintf_s(levelStr, "LEVEL  %d", 100);
-		startTime = time(0);
+		if (!startingGame || win || lost) {
+			startingGame = true;
+			visualangle = 0;
+			score = 0;
+			//Inizializzazione scritte a schermo
+			sprintf_s(scoreStr, "SCORE: %d", score);
+			sprintf_s(livesStr, "LIVES: %d", lives);
+			sprintf_s(levelStr, "LEVEL  %d", 100);
+			startTime = time(0);
+		}
 		break;
 		//Tutorial
 	case 2:
+		if (!startingGame || win || lost) {
+
+		}
 		break;
 
 	}
