@@ -13,6 +13,7 @@
 #include <math.h>
 #include "Meteorites.h"
 #include "Planet.h"
+#include <ctime>
 
 using namespace std;
 
@@ -148,6 +149,24 @@ static int damagedFrames = 200;
 //Fine gioco (vittoria)
 bool win = false;
 
+//Stringhe da visualizzare a schermo
+char scoreStr[30] = "";
+char livesStr[30] = "";
+char levelStr[30] = "";
+
+//Punteggio
+int score = 0;
+time_t startTime;
+
+//Aggiorna il punteggio
+void updateScore() {
+	if (startingGame) {
+		time_t currentTime = time(0);
+		score = 1000 * (currentTime - startTime);
+		sprintf_s(scoreStr, "SCORE: %d", score);
+	}
+}
+
 //Drawing text on screen
 void drawString(int x, int y, char *string) {
 	glMatrixMode(GL_PROJECTION);
@@ -164,10 +183,10 @@ void drawString(int x, int y, char *string) {
 	glDisable(GL_DEPTH_TEST);
 
 	glDisable(GL_LIGHTING);
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3f(1.0, 1.0, 1.0);
 
 	glRasterPos2i(x, y);
-	void *font = GLUT_BITMAP_HELVETICA_18;
+	void *font = GLUT_BITMAP_TIMES_ROMAN_24;
 	for (char* c = string; *c != '\0'; c++)
 	{
 		glutBitmapCharacter(font, *c);
@@ -735,6 +754,8 @@ void display(void) {
 		if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
 			damaged = true;
 			lives--;
+			//Aggiornamento vite a schermo
+			sprintf_s(livesStr, "LIVES: %d", lives);
 			// Fine gioco
 			if (lives == 0)
 				resetGame();
@@ -876,8 +897,19 @@ void display(void) {
 			resetGame();
 		}
 	}
-	char trial[] = "Trallallero Trallala!";
-	drawString(20, 20, trial);
+
+	int w = glutGet(GLUT_WINDOW_WIDTH);
+	int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+	//In alto a sinistra
+	updateScore();
+	drawString(50, (h - 50), scoreStr);
+
+	//In alto a destra
+	drawString((w - 200), (h - 50), livesStr);
+
+	//In alto al centro
+	drawString((w / 2), (h - 50), levelStr);
 	
 	glutSwapBuffers();
 	do_motion();
@@ -1077,7 +1109,7 @@ int InitGL() {
 
 //Interazione tastiera
 static void keyboard(unsigned char key, int x, int y) {
-
+	
 	switch (key) {
 	case 27:
 		exit(1);
@@ -1213,6 +1245,12 @@ void startGame(int choice) {
 	case 1:
 		startingGame = true;
 		visualangle = 0;
+		score = 0;
+		//Inizializzazione scritte a schermo
+		sprintf_s(scoreStr, "SCORE: %d", score);
+		sprintf_s(livesStr, "LIVES: %d", lives);
+		sprintf_s(levelStr, "LEVEL  %d", 100);
+		startTime = time(0);
 		break;
 		//Tutorial
 	case 2:
