@@ -21,14 +21,16 @@ Meteorite::Meteorite(int selMeteor) {
 
 	switch (selMeteor) {
 	case 0:
-		sizeCubeMeteorites = 0.60;
+		//sizeCubeMeteorites = 0.60;
+		sizeCubeMeteorites = 0.25;
 		posxCubeMeteorites = -17.52;
 		posyCubeMeteorites = 0.16;
 		poszCubeMeteorites = 10.88;
 		scene_listNum = 2;
 		break;
 	case 1:
-		sizeCubeMeteorites = 0.36;
+		//sizeCubeMeteorites = 0.36;
+		sizeCubeMeteorites = 0.16;
 		posxCubeMeteorites = -20.64;
 		posyCubeMeteorites = 0.24;
 		poszCubeMeteorites = 14.4;
@@ -36,14 +38,16 @@ Meteorite::Meteorite(int selMeteor) {
 		break;
 
 	case 2:
-		sizeCubeMeteorites = 0.90;
+		//sizeCubeMeteorites = 0.90;
+		sizeCubeMeteorites = 0.55;
 		posxCubeMeteorites = -20.56;
 		posyCubeMeteorites = 0.08;
 		poszCubeMeteorites = 11.04;
 		scene_listNum = 4;
 		break;
 	case 3:
-		sizeCubeMeteorites = 0.64;
+		//sizeCubeMeteorites = 0.64;
+		sizeCubeMeteorites = 0.45;
 		posxCubeMeteorites = -17.2;
 		posyCubeMeteorites = 0.16;
 		poszCubeMeteorites = 14.8;

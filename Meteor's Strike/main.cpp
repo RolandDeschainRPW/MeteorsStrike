@@ -68,8 +68,8 @@ static float centery = -0.25f;
 static float centerz = 0.75f;
 
 //Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
-static int numMeteorites = 2;
-
+//static int numMeteorites = 2;
+static int numMeteorites = 40;
 //Booleano per segnalare un giro effettuato dai meteoriti
 static bool lapDone = false;
 
@@ -84,7 +84,8 @@ list<Meteorite> meteorites;
 static GLubyte lists[3];
 
 //Valori cubo per collisioni astronave
-static double sizeCubeSpaceship = 1.68;
+//static double sizeCubeSpaceship = 1.68;
+static double sizeCubeSpaceship = 1.00;
 static float posxCubeSpaceship = -18.16;
 static float posyCubeSpaceship = 0;
 static float poszCubeSpaceship = 0;
@@ -491,50 +492,46 @@ bool checkCollisionSpaceshipWithPlanet() {
 
 }
 
-bool checkCollisionMeteorWithPlanet() {
+bool checkCollisionMeteorWithPlanet(list<Meteorite>::iterator iterM) {
 	list<Planet>::iterator iterP = listOfPlanet.begin();
-	list<Meteorite>::iterator iterM = meteorites.begin();
-	while (iterM != meteorites.end()) {
-		Meteorite m = *iterM;
-		/*
-		x' = xcos(a) + zsen(a)
-		y'=y
-		z'= -xsen(a)+zcos(a)
-		*/
-		double radiantAngleMeteorites = ((angle * 10)*PI) / 180;
+	Meteorite m = *iterM;
+	/*
+	x' = xcos(a) + zsen(a)
+	y'=y
+	z'= -xsen(a)+zcos(a)
+	*/
+
+	while (iterP != listOfPlanet.end()) {
+		double radiantAngleMeteorites = (((angle * 10) + offsetAngleMeteorites)*PI) / 180;
 		double radiantAnglePlanet = (angle*PI) / 180;
+
+		Planet p = *iterP;
+		double x2 = p.getx();
+		double y2 = p.gety();
+		double z2 = p.getz();
+
 		double x1 = m.getPosx();
 		double y1 = m.getPosy();
 		double z1 = m.getPosz();
 
+		double xrotPlanet = (x2 * cos(radiantAnglePlanet)) + (z2*sin(radiantAnglePlanet));
+		double zrotPlanet = (-x2 * sin(radiantAnglePlanet)) + (z2 * cos(radiantAnglePlanet));
+
 		double xrotMeteorites = (x1 * cos(radiantAngleMeteorites)) + (z1*sin(radiantAngleMeteorites));
 		double zrotMeteorites = (-x1 * sin(radiantAngleMeteorites)) + (z1 * cos(radiantAngleMeteorites));
 
-		while (iterP != listOfPlanet.end()) {
-			Planet p = *iterP;
-			double x2 = p.getx();
-			double y2 = p.gety();
-			double z2 = p.getz();
+		double dx = xrotMeteorites - xrotPlanet;
+		double dy = y1 - y2;
+		double dz = zrotMeteorites - zrotPlanet;
 
-			double xrotPlanet = (x2 * cos(radiantAnglePlanet)) + (z2*sin(radiantAnglePlanet));
-			double zrotPlanet = (-x2 * sin(radiantAnglePlanet)) + (z2 * cos(radiantAnglePlanet));
-
-			double dx = xrotMeteorites - xrotPlanet;
-			double dy = y1 - y2;
-			double dz = zrotMeteorites - xrotPlanet;
-
-			double distance = sqrt(dx * dx + dy * dy + dz * dz);
-			if (distance <= p.getSize() + m.getSizeCube()) {
-				return true;
-			}
-			iterP++;
-
+		double distance = sqrt(dx * dx + dy * dy + dz * dz);
+		if (distance <= p.getSize() + m.getSizeCube()) {
+			return true;
 		}
-		iterP = listOfPlanet.begin();
-
-		iterM++;
+		iterP++;
 
 	}
+
 	return false;
 }
 
@@ -601,8 +598,8 @@ void display(void) {
 
 		// Verifica se i meteoriti hanno effettuato un giro completo
 		if ((int)(angle * 10) % 360 > -20) {
-			if (angle != 0)
-				cout << "Giro completo dei meteoriti!" << endl;
+			//if (angle != 0)
+				//cout << "Giro completo dei meteoriti!" << endl;
 			lapDone = true;
 		}
 		else lapDone = false;
@@ -786,17 +783,17 @@ void display(void) {
 
 			// Trasformazioni sul cubo del meteorite
 
-			/*glPushMatrix();
-			glRotatef(angle * 10, 0.f, 1.f, 0.f);
+			glPushMatrix();
+			glRotatef((angle * 10)+offsetAngleMeteorites, 0.f, 1.f, 0.f);
 			//glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
 			//glutSolidCube(sizeCubeMeteorites);
 			//Rendo invisibile il cubo
 			//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-			glTranslatef(posxCubeMeteorites+meteoritesiter->getPosx(), posyCubeMeteorites + meteoritesiter->getPosy(), poszCubeMeteorites + meteoritesiter->getPosz());
+			glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
 			//glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
-			glutSolidSphere(sizeCubeMeteorites, 50, 50);
+			glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
 
-			glPopMatrix();*/
+			glPopMatrix();
 
 
 			meteoritesiter++;
@@ -806,12 +803,12 @@ void display(void) {
 		meteoritesiter = meteorites.begin();
 
 		// Trasformazioni sul cubo dell'astronave
-		/*glPushMatrix();
+		glPushMatrix();
 		glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
 		//glutSolidCube(sizeCubeSpaceship);
-		glutSolidSphere(sizeCubeSpaceship, 50, 50);*/
+		glutSolidSphere(sizeCubeSpaceship, 50, 50);
 
-		//glPopMatrix();
+		glPopMatrix();
 
 		//Collisioni pianeti
 		/*glPushMatrix();
