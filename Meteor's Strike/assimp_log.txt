@@ -1,12 +1,12 @@
-Info,  T1596: Load models\scenario.obj
-Info,  T1596: Found a matching importer for this file format
-Info,  T1596: Import root directory is 'models\'
-Error, T1596: OBJ/MTL: Encountered unknown texture type
-Error, T1596: OBJ/MTL: Unexpected illumination model (0-2 recognized)
-Info,  T1596: Entering post processing pipeline
-Info,  T1596: TriangulateProcess finished. All polygons have been triangulated.
-Info,  T1596: Points: 0, Lines: 0, Triangles: 14, Polygons: 0 (Meshes, X = removed)
-Error, T1596: Unable to compute tangents: UV0 and normals must be there 
-Info,  T1596: JoinVerticesProcess finished | Verts in: 958912 out: 389053 | ~59.4%
-Info,  T1596: Cache relevant are 14 meshes (479424 faces). Average output ACMR is 1.042420
-Info,  T1596: Leaving post processing pipeline
+Info,  T32528: Load models\scenario.obj
+Info,  T32528: Found a matching importer for this file format
+Info,  T32528: Import root directory is 'models\'
+Error, T32528: OBJ/MTL: Encountered unknown texture type
+Error, T32528: OBJ/MTL: Unexpected illumination model (0-2 recognized)
+Info,  T32528: Entering post processing pipeline
+Info,  T32528: TriangulateProcess finished. All polygons have been triangulated.
+Info,  T32528: Points: 0, Lines: 0, Triangles: 14, Polygons: 0 (Meshes, X = removed)
+Error, T32528: Unable to compute tangents: UV0 and normals must be there 
+Info,  T32528: JoinVerticesProcess finished | Verts in: 958912 out: 389053 | ~59.4%
+Info,  T32528: Cache relevant are 14 meshes (479424 faces). Average output ACMR is 1.042420
+Info,  T32528: Leaving post processing pipeline
