@@ -164,6 +164,9 @@ static char levelStr[30] = "";
 int score = 0;
 time_t startTime;
 
+//Livello
+int level = 1;
+
 //Aggiorna il punteggio
 void updateScore() {
 	if (startingGame && !win && !lost) {
@@ -620,6 +623,8 @@ void resetGame() {
 	framesAfterLost = 200;
 
 	score = 0;
+
+	level = 1;
 	
 	sprintf_s(scoreStr, "", "");
 	sprintf_s(livesStr, "", "");
@@ -755,6 +760,8 @@ void display(void) {
 
 			}
 			multiplied = true;
+			level++;
+			sprintf_s(levelStr, "LEVEL %d", level);
 			//cout << "Incremento dei meteoriti!" << endl;
 		}
 		else if (!lapDone) multiplied = false;
@@ -1313,11 +1320,10 @@ void startGame(int choice) {
 		if (!startingGame || win || lost) {
 			startingGame = true;
 			visualangle = 0;
-			score = 0;
 			//Inizializzazione scritte a schermo
 			sprintf_s(scoreStr, "SCORE: %d", score);
 			sprintf_s(livesStr, "LIVES: %d", lives);
-			sprintf_s(levelStr, "LEVEL  %d", 100);
+			sprintf_s(levelStr, "LEVEL  %d", level);
 			startTime = time(0);
 		}
 		break;
