@@ -69,8 +69,8 @@ static float centery = -0.25f;
 static float centerz = 0.75f;
 
 //Numero meteoriti di ogni tipo (numMeteoritiTot = numMeteorites*4)
-//static int numMeteorites = 2;
-static int numMeteorites = 40;
+static int numMeteorites = 2;
+//static int numMeteorites = 40;
 //Booleano per segnalare un giro effettuato dai meteoriti
 static bool lapDone = false;
 
@@ -86,7 +86,7 @@ static GLubyte lists[3];
 
 //Valori cubo per collisioni astronave
 //static double sizeCubeSpaceship = 1.68;
-static double sizeCubeSpaceship = 1.00;
+static double sizeCubeSpaceship = 0.5;
 static float posxCubeSpaceship = -18.16;
 static float posyCubeSpaceship = 0;
 static float poszCubeSpaceship = 0;
@@ -607,6 +607,8 @@ void resetGame() {
 	damagedFrames = 200;
 
 	win = false;
+
+	glutPostRedisplay();
 }
 
 
@@ -751,13 +753,49 @@ void display(void) {
 		glCallList(scene_list);
 		glPopMatrix();
 
+		// Iteratore per iterare sulla lista di meteoriti
+		list<Meteorite>::iterator meteoritesiter = meteorites.begin();
+
+		// Ciclo per renderizzare tutti i meteoriti
+		for (int i = 0; i < numMeteorites * 4; i++) {
+			// Trasformazioni sul meteorite
+			glPushMatrix();
+			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
+			glCallList(scene_list + meteoritesiter->getSceneList());
+			glPopMatrix();
+
+
+
+			// Trasformazioni sul cubo del meteorite
+
+			/*glPushMatrix();
+			glRotatef((angle * 10)+offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			//glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
+			//glutSolidCube(sizeCubeMeteorites);
+			//Rendo invisibile il cubo
+			//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+			glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
+			//glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
+			glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
+
+			glPopMatrix();*/
+
+
+			meteoritesiter++;
+
+		}
+
+		meteoritesiter = meteorites.begin();
+
 		if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
 			damaged = true;
 			lives--;
 			//Aggiornamento vite a schermo
-			sprintf_s(livesStr, "LIVES: %d", lives);
+			if(lives!=-1)
+				sprintf_s(livesStr, "LIVES: %d", lives);
 			// Fine gioco
-			if (lives == 0)
+			if (lives == -1)
 				resetGame();
 		}
 
@@ -787,49 +825,13 @@ void display(void) {
 			}
 		}
 
-
-		// Iteratore per iterare sulla lista di meteoriti
-		list<Meteorite>::iterator meteoritesiter = meteorites.begin();
-
-		// Ciclo per renderizzare tutti i meteoriti
-		for (int i = 0; i < numMeteorites * 4; i++) {
-			// Trasformazioni sul meteorite
-			glPushMatrix();
-			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
-			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
-			glCallList(scene_list + meteoritesiter->getSceneList());
-			glPopMatrix();
-
-
-
-			// Trasformazioni sul cubo del meteorite
-
-			glPushMatrix();
-			glRotatef((angle * 10)+offsetAngleMeteorites, 0.f, 1.f, 0.f);
-			//glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
-			//glutSolidCube(sizeCubeMeteorites);
-			//Rendo invisibile il cubo
-			//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-			glTranslatef(meteoritesiter->getPosxCube(), meteoritesiter->getPosyCube(), meteoritesiter->getPoszCube());
-			//glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
-			glutSolidSphere(meteoritesiter->getSizeCube(), 50, 50);
-
-			glPopMatrix();
-
-
-			meteoritesiter++;
-
-		}
-
-		meteoritesiter = meteorites.begin();
-
 		// Trasformazioni sul cubo dell'astronave
-		glPushMatrix();
+		/*glPushMatrix();
 		glTranslatef(posxCubeSpaceship + leftMov, posyCubeSpaceship + up, poszCubeSpaceship + forwardMov);
 		//glutSolidCube(sizeCubeSpaceship);
 		glutSolidSphere(sizeCubeSpaceship, 50, 50);
 
-		glPopMatrix();
+		glPopMatrix();*/
 
 		//Collisioni pianeti
 		/*glPushMatrix();
