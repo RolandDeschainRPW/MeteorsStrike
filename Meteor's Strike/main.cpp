@@ -149,6 +149,12 @@ static int damagedFrames = 200;
 //Fine gioco (vittoria)
 bool win = false;
 
+//Fine gioco (sconfitta)
+bool lost = false;
+
+//Durata animazione finale per sconfitta
+int framesAfterLost = 600;
+
 //Stringhe da visualizzare a schermo
 char scoreStr[30] = "";
 char livesStr[30] = "";
@@ -608,12 +614,16 @@ void resetGame() {
 
 	win = false;
 
+	lost = false;
+
+	framesAfterLost = 200;
+
 	glutPostRedisplay();
 }
 
 
 void display(void) {
-	if (!win) {
+	if (!win && !lost) {
 		// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
 		if (angle < -360) angle += 360;
 
@@ -796,7 +806,7 @@ void display(void) {
 				sprintf_s(livesStr, "LIVES: %d", lives);
 			// Fine gioco
 			if (lives == -1)
-				resetGame();
+				lost = true;
 		}
 
 		//Invoco la lista con le istruzioni per visualizzare l'astronave, con tutte le trasformazioni
@@ -864,7 +874,7 @@ void display(void) {
 		glutSolidSphere(sizeSaturnSphere, 50, 50);
 		glPopMatrix();*/
 
-	} else {
+	} else if(win) {
 		//Fine gioco, movimento videocamera finale
 		if (eyex < 10) {
 			eyex += 0.08;
@@ -898,6 +908,54 @@ void display(void) {
 		if (eyez > 5) {
 			resetGame();
 		}
+	}
+	else if (lost) {
+
+
+		float tmp;
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		//Focus to spaceship
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
+		// rotate it around the y axis
+		glRotatef(visualangle, 0.f, 1.f, 0.f);
+
+
+		// center the model
+		glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
+
+
+		//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
+		glPushMatrix();
+		glRotatef(angle, 0.f, 1.f, 0.f);
+		glCallList(scene_list);
+		glPopMatrix();
+
+		// Iteratore per iterare sulla lista di meteoriti
+		list<Meteorite>::iterator meteoritesiter = meteorites.begin();
+
+		// Ciclo per renderizzare tutti i meteoriti
+		for (int i = 0; i < numMeteorites * 4; i++) {
+			// Trasformazioni sul meteorite
+			glPushMatrix();
+			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
+			glCallList(scene_list + meteoritesiter->getSceneList());
+			glPopMatrix();
+
+
+			meteoritesiter++;
+
+		}
+
+		meteoritesiter = meteorites.begin();
+
+		framesAfterLost--;
+		if (framesAfterLost == 0) {
+			resetGame();
+		}
+
 	}
 
 	int w = glutGet(GLUT_WINDOW_WIDTH);
