@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd Albedo&Clouds_h.jpg
+map_Kd Albedo&Clouds.jpg
 map_Bump -bm -0.060000 Albedo&Clouds_h.jpg
 
 newmtl Extern
@@ -55,7 +55,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd moon-bump.jpg
+map_Kd moon-diffuse.jpg
 map_Bump -bm 0.250000 moon-bump.jpg
 
 newmtl None
@@ -75,8 +75,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Bump -bm 0.200000 rock-tex_h.jpg
 map_Kd rock-tex.jpg
+map_Bump -bm 0.200000 rock-tex_h.jpg
 
 newmtl SaturnMat
 Ns 96.078431
