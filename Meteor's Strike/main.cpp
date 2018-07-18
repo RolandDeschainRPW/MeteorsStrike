@@ -483,86 +483,86 @@ bool checkCollisionWithMeteor() {
 	return false;
 }
 
-bool checkCollisionSpaceshipWithPlanet() {
+//bool checkCollisionSpaceshipWithPlanet() {
+//
+//	list<Planet>::iterator iter = listOfPlanet.begin();
+//	while (iter != listOfPlanet.end()) {
+//		Planet p = *iter;
+//		/*
+//		x' = xcos(a) + zsen(a)
+//		y'=y
+//		z'= -xsen(a)+zcos(a)
+//		*/
+//		double radiantAngle = (angle*PI) / 180;
+//		double x1 = p.getx();
+//		double x2 = posxCubeSpaceship + leftMov;
+//		double y1 = p.gety();
+//		double y2 = posyCubeSpaceship + up;
+//		double z1 = p.getz();
+//		double z2 = poszCubeSpaceship + forwardMov;
+//
+//
+//		double xrot = (x1 * cos(radiantAngle)) + (z1*sin(radiantAngle));
+//		double zrot = (-x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
+//
+//		double dx = xrot - x2;
+//		double dy = y1 - y2;
+//		double dz = zrot - z2;
+//
+//		double distance = sqrt(dx * dx + dy * dy + dz * dz);
+//		if (distance <= p.getSize() + sizeCubeSpaceship) {
+//			return true;
+//		}
+//
+//		iter++;
+//
+//	}
+//	return false;
+//
+//}
 
-	list<Planet>::iterator iter = listOfPlanet.begin();
-	while (iter != listOfPlanet.end()) {
-		Planet p = *iter;
-		/*
-		x' = xcos(a) + zsen(a)
-		y'=y
-		z'= -xsen(a)+zcos(a)
-		*/
-		double radiantAngle = (angle*PI) / 180;
-		double x1 = p.getx();
-		double x2 = posxCubeSpaceship + leftMov;
-		double y1 = p.gety();
-		double y2 = posyCubeSpaceship + up;
-		double z1 = p.getz();
-		double z2 = poszCubeSpaceship + forwardMov;
-
-
-		double xrot = (x1 * cos(radiantAngle)) + (z1*sin(radiantAngle));
-		double zrot = (-x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
-
-		double dx = xrot - x2;
-		double dy = y1 - y2;
-		double dz = zrot - z2;
-
-		double distance = sqrt(dx * dx + dy * dy + dz * dz);
-		if (distance <= p.getSize() + sizeCubeSpaceship) {
-			return true;
-		}
-
-		iter++;
-
-	}
-	return false;
-
-}
-
-bool checkCollisionMeteorWithPlanet(list<Meteorite>::iterator iterM) {
-	list<Planet>::iterator iterP = listOfPlanet.begin();
-	Meteorite m = *iterM;
-	/*
-	x' = xcos(a) + zsen(a)
-	y'=y
-	z'= -xsen(a)+zcos(a)
-	*/
-
-	while (iterP != listOfPlanet.end()) {
-		double radiantAngleMeteorites = (((angle * 10) + offsetAngleMeteorites)*PI) / 180;
-		double radiantAnglePlanet = (angle*PI) / 180;
-
-		Planet p = *iterP;
-		double x2 = p.getx();
-		double y2 = p.gety();
-		double z2 = p.getz();
-
-		double x1 = m.getPosx();
-		double y1 = m.getPosy();
-		double z1 = m.getPosz();
-
-		double xrotPlanet = (x2 * cos(radiantAnglePlanet)) + (z2*sin(radiantAnglePlanet));
-		double zrotPlanet = (-x2 * sin(radiantAnglePlanet)) + (z2 * cos(radiantAnglePlanet));
-
-		double xrotMeteorites = (x1 * cos(radiantAngleMeteorites)) + (z1*sin(radiantAngleMeteorites));
-		double zrotMeteorites = (-x1 * sin(radiantAngleMeteorites)) + (z1 * cos(radiantAngleMeteorites));
-
-		double dx = xrotMeteorites - xrotPlanet;
-		double dy = y1 - y2;
-		double dz = zrotMeteorites - zrotPlanet;
-
-		double distance = sqrt(dx * dx + dy * dy + dz * dz);
-		if (distance <= p.getSize() + m.getSizeCube()) {
-			return true;
-		}
-		iterP++;
-
-	}
-
-	return false;
-}
+//bool checkCollisionMeteorWithPlanet(list<Meteorite>::iterator iterM) {
+//	list<Planet>::iterator iterP = listOfPlanet.begin();
+//	Meteorite m = *iterM;
+//	/*
+//	x' = xcos(a) + zsen(a)
+//	y'=y
+//	z'= -xsen(a)+zcos(a)
+//	*/
+//
+//	while (iterP != listOfPlanet.end()) {
+//		double radiantAngleMeteorites = (((angle * 10) + offsetAngleMeteorites)*PI) / 180;
+//		double radiantAnglePlanet = (angle*PI) / 180;
+//
+//		Planet p = *iterP;
+//		double x2 = p.getx();
+//		double y2 = p.gety();
+//		double z2 = p.getz();
+//
+//		double x1 = m.getPosx();
+//		double y1 = m.getPosy();
+//		double z1 = m.getPosz();
+//
+//		double xrotPlanet = (x2 * cos(radiantAnglePlanet)) + (z2*sin(radiantAnglePlanet));
+//		double zrotPlanet = (-x2 * sin(radiantAnglePlanet)) + (z2 * cos(radiantAnglePlanet));
+//
+//		double xrotMeteorites = (x1 * cos(radiantAngleMeteorites)) + (z1*sin(radiantAngleMeteorites));
+//		double zrotMeteorites = (-x1 * sin(radiantAngleMeteorites)) + (z1 * cos(radiantAngleMeteorites));
+//
+//		double dx = xrotMeteorites - xrotPlanet;
+//		double dy = y1 - y2;
+//		double dz = zrotMeteorites - zrotPlanet;
+//
+//		double distance = sqrt(dx * dx + dy * dy + dz * dz);
+//		if (distance <= p.getSize() + m.getSizeCube()) {
+//			return true;
+//		}
+//		iterP++;
+//
+//	}
+//
+//	return false;
+//}
 
 bool showSpaceship() {
 	int num = 190;
@@ -812,7 +812,7 @@ void display(void) {
 
 		meteoritesiter = meteorites.begin();
 
-		if ((checkCollisionWithMeteor() || checkCollisionSpaceshipWithPlanet()) && !damaged) {
+		if (checkCollisionWithMeteor() && !damaged) {
 			damaged = true;
 			lives--;
 			//Aggiornamento vite a schermo
