@@ -1276,7 +1276,7 @@ int LoadGLTextures(const aiScene* scene) {
 
 		/* Loading of image */
 		std::string fileloc = basepath + filename;
-		success = ilLoadImage((const wchar_t *)fileloc.c_str());
+		success = ilLoadImage((/* const wchar_t * */const char *)fileloc.c_str());
 
 		fprintf(stdout, "Loading Image: %s\n", fileloc.data());
 
