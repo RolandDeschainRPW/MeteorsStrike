@@ -45,7 +45,7 @@ static float angle = 0.f;
 static float visualangle = 0.f;
 
 //Angolo per difficoltà
-static float diffAngle = 10;
+static float diffAngle = 0.002;
 
 //Offset in modo che i meteoriti non compaiano di fronte allo schermo
 static float offsetAngleMeteorites = -94.0814;
@@ -518,7 +518,7 @@ void do_motion(void) {
 		static GLint prev_time = 0;
 		int time = glutGet(GLUT_ELAPSED_TIME);
 		if (startingGame && !askToContinue) {
-			angle -= (time - prev_time)*0.002;
+			angle -= (time - prev_time)*diffAngle;
 			//angle -= 0.08;
 		}
 		else if(!askToContinue)
@@ -539,7 +539,7 @@ bool checkCollisionWithMeteor() {
 		y'=y
 		z'= -xsen(a)+zcos(a)
 		*/
-		double radiantAngle = (((angle * diffAngle)+offsetAngleMeteorites)*PI) / 180;
+		double radiantAngle = (((angle * 10)+offsetAngleMeteorites)*PI) / 180;
 		double x1 = m.getPosxCube();
 		double x2 = posxCubeSpaceship + leftMov;
 		double y1 = m.getPosyCube();
@@ -732,7 +732,7 @@ void resetGame() {
 
 	askToContinue = false;
 
-	diffAngle = 10;
+	diffAngle = 0.002;
 
 	glutPostRedisplay();
 }
@@ -804,8 +804,9 @@ void display(void) {
 		// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
 		if (angle < -360) angle += 360;
 
+		
 		// Verifica se i meteoriti hanno effettuato un giro completo
-		if ((int)(angle * diffAngle) % 360 > -20) {
+		if ((int)((angle * 10)) % 360 > -20) {
 			//if (angle != 0)
 				//cout << "Giro completo dei meteoriti!" << endl;
 			lapDone = true;
@@ -813,13 +814,9 @@ void display(void) {
 		else lapDone = false;
 
 		if (askToContinue) {
-			if (askToContinue) {
 
-				sprintf_s(askToContStr, "%s", "PREMI [Y] PER CONTINUARE LA PARTITA");
-				sprintf_s(askToContStr2, "%s", "PREMI [N] PER FERMARTI");
-
-
-			}
+			sprintf_s(askToContStr, "%s", "PREMI [Y] PER CONTINUARE LA PARTITA");
+			sprintf_s(askToContStr2, "%s", "PREMI [N] PER FERMARTI");
 
 		}
 
@@ -937,13 +934,19 @@ void display(void) {
 			}
 			multiplied = true;
 			level++;
+			
 
-			if ((level % 2) == 0)
-				diffAngle++;
+			if ((level % 1) == 0) {
+				//Aumento velocità angolo
+				diffAngle += 0.0005;
+			}
+
+				
 			if (((level-1)%15) == 0)
 				askToContinue = true;
+
 			sprintf_s(levelStr, "LEVEL %d", level);
-			//cout << "Incremento dei meteoriti!" << endl;
+			cout << "Incremento dei meteoriti!" << endl;
 		}
 		else if (!lapDone) multiplied = false;
 
@@ -965,7 +968,7 @@ void display(void) {
 		for (int i = 0; i < numMeteorites * 4; i++) {
 			// Trasformazioni sul meteorite
 			glPushMatrix();
-			glRotatef((angle * diffAngle) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
 			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
 			glCallList(scene_list + meteoritesiter->getSceneList());
 			glPopMatrix();
@@ -1138,7 +1141,7 @@ void display(void) {
 		for (int i = 0; i < numMeteorites * 4; i++) {
 			// Trasformazioni sul meteorite
 			glPushMatrix();
-			glRotatef((angle * diffAngle) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
 			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
 			glCallList(scene_list + meteoritesiter->getSceneList());
 			glPopMatrix();
