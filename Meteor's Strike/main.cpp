@@ -131,13 +131,6 @@ static float posxSaturnSphere = 23.36;
 static float posySaturnSphere = -0.8;
 static float poszSaturnSphere = -18;
 
-Planet earth(8.08, -28, 0.08, -1.68);
-Planet moon(2.72, -11.28, -1.2, 21.04);
-Planet mars(6.8, 13.52, -4.88, 18.08);
-Planet saturn(8.08, 23.36, -0.8, -18);
-
-list<Planet> listOfPlanet;
-
 
 // Flag per inizio gioco
 bool startingGame = false;
@@ -566,86 +559,6 @@ bool checkCollisionWithMeteor() {
 	return false;
 }
 
-//bool checkCollisionSpaceshipWithPlanet() {
-//
-//	list<Planet>::iterator iter = listOfPlanet.begin();
-//	while (iter != listOfPlanet.end()) {
-//		Planet p = *iter;
-//		/*
-//		x' = xcos(a) + zsen(a)
-//		y'=y
-//		z'= -xsen(a)+zcos(a)
-//		*/
-//		double radiantAngle = (angle*PI) / 180;
-//		double x1 = p.getx();
-//		double x2 = posxCubeSpaceship + leftMov;
-//		double y1 = p.gety();
-//		double y2 = posyCubeSpaceship + up;
-//		double z1 = p.getz();
-//		double z2 = poszCubeSpaceship + forwardMov;
-//
-//
-//		double xrot = (x1 * cos(radiantAngle)) + (z1*sin(radiantAngle));
-//		double zrot = (-x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
-//
-//		double dx = xrot - x2;
-//		double dy = y1 - y2;
-//		double dz = zrot - z2;
-//
-//		double distance = sqrt(dx * dx + dy * dy + dz * dz);
-//		if (distance <= p.getSize() + sizeCubeSpaceship) {
-//			return true;
-//		}
-//
-//		iter++;
-//
-//	}
-//	return false;
-//
-//}
-
-//bool checkCollisionMeteorWithPlanet(list<Meteorite>::iterator iterM) {
-//	list<Planet>::iterator iterP = listOfPlanet.begin();
-//	Meteorite m = *iterM;
-//	/*
-//	x' = xcos(a) + zsen(a)
-//	y'=y
-//	z'= -xsen(a)+zcos(a)
-//	*/
-//
-//	while (iterP != listOfPlanet.end()) {
-//		double radiantAngleMeteorites = (((angle * 10) + offsetAngleMeteorites)*PI) / 180;
-//		double radiantAnglePlanet = (angle*PI) / 180;
-//
-//		Planet p = *iterP;
-//		double x2 = p.getx();
-//		double y2 = p.gety();
-//		double z2 = p.getz();
-//
-//		double x1 = m.getPosx();
-//		double y1 = m.getPosy();
-//		double z1 = m.getPosz();
-//
-//		double xrotPlanet = (x2 * cos(radiantAnglePlanet)) + (z2*sin(radiantAnglePlanet));
-//		double zrotPlanet = (-x2 * sin(radiantAnglePlanet)) + (z2 * cos(radiantAnglePlanet));
-//
-//		double xrotMeteorites = (x1 * cos(radiantAngleMeteorites)) + (z1*sin(radiantAngleMeteorites));
-//		double zrotMeteorites = (-x1 * sin(radiantAngleMeteorites)) + (z1 * cos(radiantAngleMeteorites));
-//
-//		double dx = xrotMeteorites - xrotPlanet;
-//		double dy = y1 - y2;
-//		double dz = zrotMeteorites - zrotPlanet;
-//
-//		double distance = sqrt(dx * dx + dy * dy + dz * dz);
-//		if (distance <= p.getSize() + m.getSizeCube()) {
-//			return true;
-//		}
-//		iterP++;
-//
-//	}
-//
-//	return false;
-//}
 
 bool showSpaceship() {
 	int num = 190;
@@ -824,21 +737,10 @@ void display(void) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		//gluLookAt(0.f, 0.f, 3.f, 0.f, 0.f, -5.f, 0.f, 1.f, 0.f);
-		//gluLookAt(11.0f, 0.0f, 11.0f, 10.5f, 0.f, 11.5f, 0.f, 1.f, 0.f);
-		//printf("a:%f\t b:%f\t c:%f\t d:%f\t e:%f\t f:%f\n", eyex, eyey, eyez,centerx,centery,centerz);
 		//Focus to spaceship
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
 		// rotate it around the y axis
 		glRotatef(visualangle, 0.f, 1.f, 0.f);
-
-
-		// scale the whole asset to fit into our view frustum
-		/*tmp = scene_max.x - scene_min.x;
-		tmp = aisgl_max(scene_max.y - scene_min.y, tmp);
-		tmp = aisgl_max(scene_max.z - scene_min.z, tmp);
-		tmp = 1.f / tmp;
-		glScalef(tmp, tmp, tmp);*/
 
 		// center the model
 		glTranslatef(-scene_center.x, -scene_center.y, -scene_center.z);
@@ -852,8 +754,7 @@ void display(void) {
 
 			// now begin at the root node of the imported data and traverse
 			// the scenegraph by multiplying subsequent local transforms
-			// together on GL's matrix stack.
-			//recursive_render(scene, scene->mRootNode, 1.0);		
+			// together on GL's matrix stack.		
 
 			for (int i = 0; i < scene->mRootNode->mNumChildren - 5; i++) {
 				recursive_render(scene, scene->mRootNode->mChildren[i], 1.0);
@@ -907,7 +808,7 @@ void display(void) {
 
 		}
 
-		//cout << (angle * 10) << " " << (int)(angle * 10) % 360 << endl;
+		
 
 		// Incrementa il numero di meteoriti
 		if (lapDone && !multiplied) {
@@ -936,7 +837,7 @@ void display(void) {
 			level++;
 			
 
-			if ((level % 1) == 0) {
+			if ((level % 2) == 0) {
 				//Aumento velocità angolo
 				diffAngle += 0.0005;
 			}
@@ -949,11 +850,6 @@ void display(void) {
 			cout << "Incremento dei meteoriti!" << endl;
 		}
 		else if (!lapDone) multiplied = false;
-
-		/* Non serve per ora
-		lists[0] = 0;
-		lists[1] = 1;
-		glListBase(scene_list);*/
 
 		//Invoco la lista con le istruzioni per visualizzare lo scenario, lo scenario è quello che ruota
 		glPushMatrix();
@@ -1039,37 +935,6 @@ void display(void) {
 		//glutSolidCube(sizeCubeSpaceship);
 		glutSolidSphere(sizeCubeSpaceship, 50, 50);
 
-		glPopMatrix();*/
-
-		//Collisioni pianeti
-		/*glPushMatrix();
-		glRotatef(angle, 0.f, 1.f, 0.f);
-		glTranslatef(posxPlanet, posyPlanet, poszPlanet);
-		glutSolidSphere(sizePlanet,50,50);
-		glPopMatrix();
-
-		glPushMatrix();
-		glRotatef(angle, 0.f, 1.f, 0.f);
-		glTranslatef(posxEarthSphere, posyEarthSphere, poszEarthSphere);
-		glutSolidSphere(sizeEarthSphere, 50, 50);
-		glPopMatrix();
-
-		glPushMatrix();
-		glRotatef(angle, 0.f, 1.f, 0.f);
-		glTranslatef(posxMoonSphere, posyMoonSphere, poszMoonSphere);
-		glutSolidSphere(sizeMoonSphere, 50, 50);
-		glPopMatrix();
-			
-		glPushMatrix();
-		glRotatef(angle, 0.f, 1.f, 0.f);
-		glTranslatef(posxMarsSphere, posyMarsSphere, poszMarsSphere);
-		glutSolidSphere(sizeMarsSphere, 50, 50);
-		glPopMatrix();
-
-		glPushMatrix();
-		glRotatef(angle, 0.f, 1.f, 0.f);
-		glTranslatef(posxSaturnSphere, posySaturnSphere, poszSaturnSphere);
-		glutSolidSphere(sizeSaturnSphere, 50, 50);
 		glPopMatrix();*/
 
 	} else if(win) {
@@ -1198,16 +1063,6 @@ void display(void) {
 	drawStringV2((w / 2) - 250, (h - 150) / 2, 0.25, 4.0, strStartGame2);
 
 	//Tutorial
-	//drawString(50, (h - 50), tutorialStr);
-	//drawString(50, (h - 100), tutorialStr2);
-	//drawString(50, (h - 150), tutorialStr3);
-	//drawString(50, (h - 200), tutorialStr4);
-	//drawString(50, (h - 250), tutorialStr5);
-	//drawString(50, (h - 300), tutorialStr6);
-	//drawString(50, (h - 350), tutorialStr7);
-	//drawString(50, (h - 400), tutorialStr8);
-	//drawString(50, (h - 450), tutorialStr9);
-
 	drawStringV2(20, (h - 50), 0.25, 4.0, tutorialStr);
 	drawStringV2(20, (h - 100), 0.25, 4.0, tutorialStr2);
 	drawStringV2(20, (h - 150), 0.25, 4.0, tutorialStr3);
@@ -1449,69 +1304,13 @@ static void keyboard(unsigned char key, int x, int y) {
 	case 'q':
 		if (startingGame)
 			up += 0.08;
-		cout << up << endl;
 		glutPostRedisplay();
 		break;
 		//Down-boost
 	case 'e':
 		if (startingGame)
 			up -= 0.08;
-		cout << up << endl;
 		glutPostRedisplay();
-		break;
-		//Tasti per test 
-	case 'r':
-		//xprova += 0.08;
-		//cout << "posx" << xprova<<endl;
-		//ridisegna = true;
-		posxPlanet += 0.08;
-		cout << posxPlanet << endl;
-		glutPostRedisplay();
-		break;
-	case 'f':
-		/*spinmov -= 0.8;
-		centerx -= 0.125;*/
-		//xprova -= 0.08;
-		//cout << "posx" << xprova << endl;
-		//ridisegna = true;
-		posxPlanet -= 0.08;
-		cout << posxPlanet << endl;
-		glutPostRedisplay();
-		break;
-	case 't':
-		/*spinmov -= 0.8;
-		centery += 0.125;*/
-		//zprova += 0.8;
-		posyPlanet += 0.08;
-		cout << posyPlanet << endl;
-
-		glutPostRedisplay();
-		break;
-	case 'g':
-		/*spinmov -= 0.8;
-		centery -= 0.125;*/
-		//zprova -= 0.8;
-		posyPlanet -= 0.08;
-		cout << posyPlanet << endl;
-
-		glutPostRedisplay();
-		break;
-	case 'h':
-		//spinmov -= 0.8;
-		//centerx -= 0.125;
-		//eyex -= 0.125;
-		//ridisegna = true;
-		poszPlanet -= 0.08;
-		cout << poszPlanet << endl;
-		glutPostRedisplay();
-		break;
-	case 'i':
-		sizePlanet += 0.08;
-		cout << sizePlanet << endl;
-		break;
-	case 'k':
-		sizePlanet -= 0.08;
-		cout << sizePlanet << endl;
 		break;
 	case'u':
 		askToContinue = true;
@@ -1564,19 +1363,7 @@ static void keyboard(unsigned char key, int x, int y) {
 }
 
 
-
-
-void initPlanet() {
-	listOfPlanet.push_back(earth);
-	listOfPlanet.push_back(moon);
-	listOfPlanet.push_back(mars);
-	listOfPlanet.push_back(saturn);
-}
-
-
 int main(int argc, char **argv) {
-
-	initPlanet();
 
 	struct aiLogStream stream;
 	glutInitWindowSize(900, 600);

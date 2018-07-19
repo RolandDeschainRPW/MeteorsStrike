@@ -1,7 +1,7 @@
 #pragma once
 
 
-class Planet {
+/*class Planet {
 	double sizeSphere;
 	float posxSphere;
 	float posySphere;
@@ -31,3 +31,4 @@ public:
 		return poszSphere;
 	}
 };
+*/
