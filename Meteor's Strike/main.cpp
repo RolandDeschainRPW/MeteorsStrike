@@ -25,6 +25,8 @@ using namespace std;
 
 #define PI 3.14159265
 
+#define SPACEBAR 32
+
 
 // the global Assimp scene object
 const struct aiScene* scene = NULL;
@@ -172,6 +174,29 @@ bool askToContinue = false;
 
 //Vuoi continuare la partita? 
 static char askToContStr[100] = "";
+
+// Game over 
+static char gameOver[30] = "";
+
+// Vittoria
+static char youWin[30] = "";
+
+// Stringa iniziale
+static char strStartGame[100] = "";
+
+// Tutorial
+static char tutorialStr[300] = "";
+static char tutorialStr2[300] = "";
+static char tutorialStr3[300] = "";
+static char tutorialStr4[300] = "";
+static char tutorialStr5[300] = "";
+static char tutorialStr6[300] = "";
+static char tutorialStr7[300] = "";
+static char tutorialStr8[300] = "";
+static char tutorialStr9[300] = "";
+
+// Avvio tutorial
+bool tutorial = false;
 
 //Indicatore menù
 static int startMenu;
@@ -670,6 +695,20 @@ void resetGame() {
 	sprintf_s(livesStr, "", "");
 	sprintf_s(levelStr, "", "");
 	sprintf_s(askToContStr, "", "");
+	sprintf_s(youWin, "", "");
+	sprintf_s(gameOver, "", "");
+	
+
+	sprintf_s(strStartGame, "", "");
+	sprintf_s(tutorialStr, "", "");
+	sprintf_s(tutorialStr2, "", "");
+	sprintf_s(tutorialStr3, "", "");
+	sprintf_s(tutorialStr4, "", "");
+	sprintf_s(tutorialStr5, "", "");
+	sprintf_s(tutorialStr6, "", "");
+	sprintf_s(tutorialStr7, "", "");
+	sprintf_s(tutorialStr8, "", "");
+	sprintf_s(tutorialStr9, "", "");
 
 	askToContinue = false;
 
@@ -689,6 +728,9 @@ void startGame(int choice) {
 			sprintf_s(levelStr, "LEVEL  %d", level);
 			startTime = time(0);
 
+			sprintf_s(strStartGame, "", "");
+
+
 			glutDestroyMenu(startMenu);
 
 		}
@@ -696,7 +738,7 @@ void startGame(int choice) {
 		//Tutorial
 	case 2:
 		if (!startingGame || win || lost) {
-
+			tutorial = true;
 		}
 		break;
 
@@ -706,11 +748,32 @@ void startGame(int choice) {
 
 void display(void) {
 	if (!startingGame) {
+		//Apparizione stringa iniziale
+		sprintf_s(strStartGame, "%s", "CLICCA COL TASTO SINISTRO PER APRIRE IL MENU'");
+
 		//Creazione menù
 		startMenu = glutCreateMenu(startGame);
 		glutAddMenuEntry("Avvia gioco", 1);
 		glutAddMenuEntry("Tutorial", 2);
 		glutAttachMenu(GLUT_LEFT_BUTTON);
+	}
+
+	if (tutorial) {
+		//Visualizza tutorial
+		sprintf_s(tutorialStr, "%s", "EVITA GLI ASTEROIDI E SOPRAVVIVI AL MASSACRO!");
+		sprintf_s(tutorialStr2, "%s", "CONTROLLI ASTRONAVE:");
+		sprintf_s(tutorialStr3, "%s", "W - AVANTI");
+		sprintf_s(tutorialStr4, "%s", "S - INDIETRO");
+		sprintf_s(tutorialStr5, "%s", "A - SINISTRA");
+		sprintf_s(tutorialStr6, "%s", "D - DESTRA");
+		sprintf_s(tutorialStr7, "%s", "Q - UPBOOST");
+		sprintf_s(tutorialStr8, "%s", "E - DOWNBOOST");
+		sprintf_s(tutorialStr9, "%s", "PER AVVIARE IL GIOCO PREMI SPACE");
+
+		glutDestroyMenu(startMenu);
+
+		sprintf_s(strStartGame, "", "");
+
 	}
 	if (!win && !lost) {
 		// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
@@ -727,9 +790,6 @@ void display(void) {
 		if (askToContinue) {
 			if (askToContinue) {
 
-
-				int w = glutGet(GLUT_WINDOW_WIDTH);
-				int h = glutGet(GLUT_WINDOW_HEIGHT);
 				sprintf_s(askToContStr, "%s", "PREMI [Y] PER CONTINUARE LA PARTITA, [N] PER FERMARTI");
 
 
@@ -1013,6 +1073,8 @@ void display(void) {
 		glCallList(scene_list + 1);
 		glPopMatrix();
 
+		sprintf_s(youWin, "%s", "HAI VINTO!!!");
+
 		if (eyez > 5) {
 			resetGame();
 		}
@@ -1058,6 +1120,9 @@ void display(void) {
 
 		meteoritesiter = meteorites.begin();
 
+		sprintf_s(gameOver, "%s", "GAME OVER");
+
+
 		framesAfterLost--;
 		if (framesAfterLost == 0) {
 			resetGame();
@@ -1080,6 +1145,26 @@ void display(void) {
 	
 	//Stringa per chiedere se continuare il gioco 
 	drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
+
+	//Game over
+	drawString((w / 2) - 100, (h - 50) / 2, gameOver);
+
+	//Vittoria
+	drawString((w / 2) - 100, (h - 50) / 2, youWin);
+
+	//Stringa iniziale
+	drawString((w / 2) - 300, (h - 50) / 2, strStartGame);
+
+	//Tutorial
+	drawString(50, (h - 50), tutorialStr);
+	drawString(50, (h - 100), tutorialStr2);
+	drawString(50, (h - 150), tutorialStr3);
+	drawString(50, (h - 200), tutorialStr4);
+	drawString(50, (h - 250), tutorialStr5);
+	drawString(50, (h - 300), tutorialStr6);
+	drawString(50, (h - 350), tutorialStr7);
+	drawString(50, (h - 400), tutorialStr8);
+	drawString(50, (h - 450), tutorialStr9);
 
 	glutSwapBuffers();
 	do_motion();
@@ -1400,6 +1485,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		if (askToContinue) {
 			askToContinue = false;
 			sprintf_s(askToContStr, "", "");
+			glutPostRedisplay();
 		}
 		glutPostRedisplay();
 		break;
@@ -1407,6 +1493,30 @@ static void keyboard(unsigned char key, int x, int y) {
 		//Fine gioco 
 		if (askToContinue) {
 			win = true;
+		}
+		break;
+	case SPACEBAR:
+		if (!startingGame || win || lost) {
+			tutorial = false;
+			startingGame = true;
+			visualangle = 0;
+			//Inizializzazione scritte a schermo
+			sprintf_s(scoreStr, "SCORE: %d", score);
+			sprintf_s(livesStr, "LIVES: %d", lives);
+			sprintf_s(levelStr, "LEVEL  %d", level);
+			startTime = time(0);
+
+			sprintf_s(strStartGame, "", "");
+			sprintf_s(tutorialStr, "", "");
+			sprintf_s(tutorialStr2, "", "");
+			sprintf_s(tutorialStr3, "", "");
+			sprintf_s(tutorialStr4, "", "");
+			sprintf_s(tutorialStr5, "", "");
+			sprintf_s(tutorialStr6, "", "");
+			sprintf_s(tutorialStr7, "", "");
+			sprintf_s(tutorialStr8, "", "");
+			sprintf_s(tutorialStr9, "", "");
+			glutPostRedisplay();
 		}
 		break;
 	default:
