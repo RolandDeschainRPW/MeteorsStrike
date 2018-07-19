@@ -170,6 +170,12 @@ int level = 1;
 //Arrivati al livello 15, viene richiesto se si vuole continuare a giocare
 bool askToContinue = false;
 
+//Vuoi continuare la partita? 
+static char askToContStr[100] = "";
+
+//Indicatore menù
+static int startMenu;
+
 //Aggiorna il punteggio
 void updateScore() {
 	if (startingGame && !win && !lost && !askToContinue) {
@@ -663,12 +669,49 @@ void resetGame() {
 	sprintf_s(scoreStr, "", "");
 	sprintf_s(livesStr, "", "");
 	sprintf_s(levelStr, "", "");
+	sprintf_s(askToContStr, "", "");
+
+	askToContinue = false;
 
 	glutPostRedisplay();
 }
 
+void startGame(int choice) {
+	switch (choice) {
+		//Avvia gioco
+	case 1:
+		if (!startingGame || win || lost) {
+			startingGame = true;
+			visualangle = 0;
+			//Inizializzazione scritte a schermo
+			sprintf_s(scoreStr, "SCORE: %d", score);
+			sprintf_s(livesStr, "LIVES: %d", lives);
+			sprintf_s(levelStr, "LEVEL  %d", level);
+			startTime = time(0);
+
+			glutDestroyMenu(startMenu);
+
+		}
+		break;
+		//Tutorial
+	case 2:
+		if (!startingGame || win || lost) {
+
+		}
+		break;
+
+	}
+}
+
 
 void display(void) {
+	if (!startingGame) {
+		//Creazione menù
+		startMenu = glutCreateMenu(startGame);
+		glutAddMenuEntry("Avvia gioco", 1);
+		glutAddMenuEntry("Tutorial", 2);
+		glutAttachMenu(GLUT_LEFT_BUTTON);
+	}
 	if (!win && !lost) {
 		// Mantiene la rotazione nel periodo 0-360 e resetta il booleano multiplied
 		if (angle < -360) angle += 360;
@@ -682,7 +725,15 @@ void display(void) {
 		else lapDone = false;
 
 		if (askToContinue) {
-			//Qui va messa la richiesta per continuare il gioco
+			if (askToContinue) {
+
+
+				int w = glutGet(GLUT_WINDOW_WIDTH);
+				int h = glutGet(GLUT_WINDOW_HEIGHT);
+				sprintf_s(askToContStr, "%s", "PREMI [Y] PER CONTINUARE LA PARTITA, [N] PER FERMARTI");
+
+
+			}
 
 		}
 
@@ -930,6 +981,8 @@ void display(void) {
 		glPopMatrix();*/
 
 	} else if(win) {
+		//Elimino richiesta 
+		sprintf_s(askToContStr, "", "");
 		//Fine gioco, movimento videocamera finale
 		if (eyex < 10) {
 			eyex += 0.08;
@@ -965,7 +1018,6 @@ void display(void) {
 		}
 	}
 	else if (lost) {
-
 
 		float tmp;
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1025,8 +1077,9 @@ void display(void) {
 
 	//In alto al centro
 	drawString((w / 2), (h - 50), levelStr);
-	//char trial[] = "Trallala";
-	//drawStringV2(50, 50, trial);
+	
+	//Stringa per chiedere se continuare il gioco 
+	drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
 
 	glutSwapBuffers();
 	do_motion();
@@ -1344,44 +1397,24 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'y':
 		//Continuo il gioco per altri 15 livelli
-		if (askToContinue) 
+		if (askToContinue) {
 			askToContinue = false;
-		
+			sprintf_s(askToContStr, "", "");
+		}
 		glutPostRedisplay();
 		break;
 	case 'n':
 		//Fine gioco 
-		if (askToContinue)
+		if (askToContinue) {
 			win = true;
+		}
 		break;
 	default:
 		break;
 	}
 }
 
-void startGame(int choice) {
-	switch (choice) {
-		//Avvia gioco
-	case 1:
-		if (!startingGame || win || lost) {
-			startingGame = true;
-			visualangle = 0;
-			//Inizializzazione scritte a schermo
-			sprintf_s(scoreStr, "SCORE: %d", score);
-			sprintf_s(livesStr, "LIVES: %d", lives);
-			sprintf_s(levelStr, "LEVEL  %d", level);
-			startTime = time(0);
-		}
-		break;
-		//Tutorial
-	case 2:
-		if (!startingGame || win || lost) {
 
-		}
-		break;
-
-	}
-}
 
 
 void initPlanet() {
@@ -1443,11 +1476,7 @@ int main(int argc, char **argv) {
 	//Associo un nome al nodo relativo all'astronave
 	scene->mRootNode->mChildren[8]->mName.Set("Spaceship");
 
-	int startMenu;
-	startMenu = glutCreateMenu(startGame);
-	glutAddMenuEntry("Avvia gioco", 1);
-	glutAddMenuEntry("Tutorial", 2);
-	glutAttachMenu(GLUT_LEFT_BUTTON);
+	
 
 	glutMainLoop();
 
