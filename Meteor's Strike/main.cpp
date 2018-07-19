@@ -174,6 +174,7 @@ bool askToContinue = false;
 
 //Vuoi continuare la partita? 
 static char askToContStr[100] = "";
+static char askToContStr2[100] = "";
 
 // Game over 
 static char gameOver[30] = "";
@@ -181,8 +182,9 @@ static char gameOver[30] = "";
 // Vittoria
 static char youWin[30] = "";
 
-// Stringa iniziale
+// Stringhe iniziali
 static char strStartGame[100] = "";
+static char strStartGame2[100] = "";
 
 // Tutorial
 static char tutorialStr[300] = "";
@@ -708,11 +710,13 @@ void resetGame() {
 	sprintf_s(livesStr, "", "");
 	sprintf_s(levelStr, "", "");
 	sprintf_s(askToContStr, "", "");
+	sprintf_s(askToContStr2, "", "");
 	sprintf_s(youWin, "", "");
 	sprintf_s(gameOver, "", "");
 	
 
 	sprintf_s(strStartGame, "", "");
+	sprintf_s(strStartGame2, "", "");
 	sprintf_s(tutorialStr, "", "");
 	sprintf_s(tutorialStr2, "", "");
 	sprintf_s(tutorialStr3, "", "");
@@ -742,6 +746,7 @@ void startGame(int choice) {
 			startTime = time(0);
 
 			sprintf_s(strStartGame, "", "");
+			sprintf_s(strStartGame2, "", "");
 
 
 			glutDestroyMenu(startMenu);
@@ -762,7 +767,8 @@ void startGame(int choice) {
 void display(void) {
 	if (!startingGame) {
 		//Apparizione stringa iniziale
-		sprintf_s(strStartGame, "%s", "CLICCA COL TASTO SINISTRO PER APRIRE IL MENU'");
+		sprintf_s(strStartGame, "%s", "CLICCA COL TASTO SINISTRO");
+		sprintf_s(strStartGame2, "%s", "PER APRIRE IL MENU'");
 
 		//Creazione menù
 		startMenu = glutCreateMenu(startGame);
@@ -786,6 +792,7 @@ void display(void) {
 		glutDestroyMenu(startMenu);
 
 		sprintf_s(strStartGame, "", "");
+		sprintf_s(strStartGame2, "", "");
 
 	}
 	if (!win && !lost) {
@@ -803,7 +810,8 @@ void display(void) {
 		if (askToContinue) {
 			if (askToContinue) {
 
-				sprintf_s(askToContStr, "%s", "PREMI [Y] PER CONTINUARE LA PARTITA, [N] PER FERMARTI");
+				sprintf_s(askToContStr, "%s", "PREMI [Y] PER CONTINUARE LA PARTITA");
+				sprintf_s(askToContStr2, "%s", "PREMI [N] PER FERMARTI");
 
 
 			}
@@ -1056,6 +1064,7 @@ void display(void) {
 	} else if(win) {
 		//Elimino richiesta 
 		sprintf_s(askToContStr, "", "");
+		sprintf_s(askToContStr2, "", "");
 		//Fine gioco, movimento videocamera finale
 		if (eyex < 10) {
 			eyex += 0.08;
@@ -1148,37 +1157,55 @@ void display(void) {
 
 	//In alto a sinistra
 	updateScore();
-	drawString(50, (h - 50), scoreStr);
+	//drawString(50, (h - 50), scoreStr);
+	drawStringV2(20, (h - 50), 0.25, 4.0, scoreStr);
 
 	//In alto a destra
-	drawString((w - 200), (h - 50), livesStr);
+	//drawString((w - 200), (h - 50), livesStr);
+	drawStringV2((w - 150), (h - 50), 0.25, 4.0, livesStr);
 
 	//In alto al centro
 	//drawString((w / 2), (h - 50), levelStr);
-	drawStringV2((w / 2) - 100, (h - 50), 0.3, 5.9, levelStr);
+	drawStringV2((w / 2) - 75, (h - 50), 0.25, 4.0, levelStr);
 	
 	//Stringa per chiedere se continuare il gioco 
-	drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
+	//drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
+	drawStringV2((w / 2) - 300, (h - 50) / 2, 0.25, 4.0, askToContStr);
+	drawStringV2((w / 2) - 200, (h - 150) / 2, 0.25, 4.0, askToContStr2);
 
 	//Game over
-	drawString((w / 2) - 100, (h - 50) / 2, gameOver);
+	//drawString((w / 2) - 100, (h - 50) / 2, gameOver);
+	drawStringV2((w / 2) - 400, (h / 2) - 50, 1, 8.0, gameOver);
 
 	//Vittoria
-	drawString((w / 2) - 100, (h - 50) / 2, youWin);
+	//drawString((w / 2) - 100, (h - 50) / 2, youWin);
+	drawStringV2((w / 2) - 380, (h / 2) - 50, 1, 8.0, youWin);
 
 	//Stringa iniziale
-	drawString((w / 2) - 300, (h - 50) / 2, strStartGame);
+	//drawString((w / 2) - 300, (h - 50) / 2, strStartGame);
+	drawStringV2((w / 2) - 300, (h - 50) / 2, 0.25, 4.0, strStartGame);
+	drawStringV2((w / 2) - 250, (h - 150) / 2, 0.25, 4.0, strStartGame2);
 
 	//Tutorial
-	drawString(50, (h - 50), tutorialStr);
-	drawString(50, (h - 100), tutorialStr2);
-	drawString(50, (h - 150), tutorialStr3);
-	drawString(50, (h - 200), tutorialStr4);
-	drawString(50, (h - 250), tutorialStr5);
-	drawString(50, (h - 300), tutorialStr6);
-	drawString(50, (h - 350), tutorialStr7);
-	drawString(50, (h - 400), tutorialStr8);
-	drawString(50, (h - 450), tutorialStr9);
+	//drawString(50, (h - 50), tutorialStr);
+	//drawString(50, (h - 100), tutorialStr2);
+	//drawString(50, (h - 150), tutorialStr3);
+	//drawString(50, (h - 200), tutorialStr4);
+	//drawString(50, (h - 250), tutorialStr5);
+	//drawString(50, (h - 300), tutorialStr6);
+	//drawString(50, (h - 350), tutorialStr7);
+	//drawString(50, (h - 400), tutorialStr8);
+	//drawString(50, (h - 450), tutorialStr9);
+
+	drawStringV2(20, (h - 50), 0.25, 4.0, tutorialStr);
+	drawStringV2(20, (h - 100), 0.25, 4.0, tutorialStr2);
+	drawStringV2(20, (h - 150), 0.25, 4.0, tutorialStr3);
+	drawStringV2(20, (h - 200), 0.25, 4.0, tutorialStr4);
+	drawStringV2(20, (h - 250), 0.25, 4.0, tutorialStr5);
+	drawStringV2(20, (h - 300), 0.25, 4.0, tutorialStr6);
+	drawStringV2(20, (h - 350), 0.25, 4.0, tutorialStr7);
+	drawStringV2(20, (h - 400), 0.25, 4.0, tutorialStr8);
+	drawStringV2(20, (h - 450), 0.25, 4.0, tutorialStr9);
 
 	glutSwapBuffers();
 	do_motion();
@@ -1499,6 +1526,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		if (askToContinue) {
 			askToContinue = false;
 			sprintf_s(askToContStr, "", "");
+			sprintf_s(askToContStr2, "", "");
 			glutPostRedisplay();
 		}
 		glutPostRedisplay();
@@ -1521,6 +1549,7 @@ static void keyboard(unsigned char key, int x, int y) {
 			startTime = time(0);
 
 			sprintf_s(strStartGame, "", "");
+			sprintf_s(strStartGame2, "", "");
 			sprintf_s(tutorialStr, "", "");
 			sprintf_s(tutorialStr2, "", "");
 			sprintf_s(tutorialStr3, "", "");
