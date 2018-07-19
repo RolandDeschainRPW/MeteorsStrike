@@ -247,9 +247,6 @@ void drawString(int x, int y, char *string) {
 }
 
 void drawStringV2(int x, int y, GLfloat scale, GLfloat lineWidth, char *string) {
-	glColor3f(0.0, 1.0, 0.0);
-	glLineWidth(lineWidth);
-
 	int w = glutGet(GLUT_WINDOW_WIDTH);
 	int h = glutGet(GLUT_WINDOW_HEIGHT);
 
@@ -263,6 +260,10 @@ void drawStringV2(int x, int y, GLfloat scale, GLfloat lineWidth, char *string) 
 	glLoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+
+	glColor3f(0.0, 1.0, 0.0);
+	glLineWidth(lineWidth);
 
 	//Translates the character object with its axis of rotation
 	glTranslatef(x, y, 0);
@@ -281,6 +282,7 @@ void drawStringV2(int x, int y, GLfloat scale, GLfloat lineWidth, char *string) 
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, string[i]);
 	}
 
+	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
