@@ -44,6 +44,9 @@ GLfloat LightPosition[] = { 0.0f, 0.0f, 15.0f, 1.0f };
 static float angle = 0.f;
 static float visualangle = 0.f;
 
+//Angolo per difficoltà
+static float diffAngle = 10;
+
 //Offset in modo che i meteoriti non compaiano di fronte allo schermo
 static float offsetAngleMeteorites = -94.0814;
 
@@ -536,7 +539,7 @@ bool checkCollisionWithMeteor() {
 		y'=y
 		z'= -xsen(a)+zcos(a)
 		*/
-		double radiantAngle = (((angle * 10)+offsetAngleMeteorites)*PI) / 180;
+		double radiantAngle = (((angle * diffAngle)+offsetAngleMeteorites)*PI) / 180;
 		double x1 = m.getPosxCube();
 		double x2 = posxCubeSpaceship + leftMov;
 		double y1 = m.getPosyCube();
@@ -729,6 +732,8 @@ void resetGame() {
 
 	askToContinue = false;
 
+	diffAngle = 10;
+
 	glutPostRedisplay();
 }
 
@@ -800,7 +805,7 @@ void display(void) {
 		if (angle < -360) angle += 360;
 
 		// Verifica se i meteoriti hanno effettuato un giro completo
-		if ((int)(angle * 10) % 360 > -20) {
+		if ((int)(angle * diffAngle) % 360 > -20) {
 			//if (angle != 0)
 				//cout << "Giro completo dei meteoriti!" << endl;
 			lapDone = true;
@@ -932,6 +937,9 @@ void display(void) {
 			}
 			multiplied = true;
 			level++;
+
+			if ((level % 2) == 0)
+				diffAngle++;
 			if (((level-1)%15) == 0)
 				askToContinue = true;
 			sprintf_s(levelStr, "LEVEL %d", level);
@@ -957,7 +965,7 @@ void display(void) {
 		for (int i = 0; i < numMeteorites * 4; i++) {
 			// Trasformazioni sul meteorite
 			glPushMatrix();
-			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glRotatef((angle * diffAngle) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
 			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
 			glCallList(scene_list + meteoritesiter->getSceneList());
 			glPopMatrix();
@@ -1130,7 +1138,7 @@ void display(void) {
 		for (int i = 0; i < numMeteorites * 4; i++) {
 			// Trasformazioni sul meteorite
 			glPushMatrix();
-			glRotatef((angle * 10) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
+			glRotatef((angle * diffAngle) + offsetAngleMeteorites, 0.f, 1.f, 0.f);
 			glTranslatef(meteoritesiter->getPosx(), meteoritesiter->getPosy(), meteoritesiter->getPosz());
 			glCallList(scene_list + meteoritesiter->getSceneList());
 			glPopMatrix();
@@ -1412,55 +1420,40 @@ static void keyboard(unsigned char key, int x, int y) {
 		break;
 		//Movimento in avanti
 	case 'w':
-		if(startingGame)
+		if(startingGame && forwardMov<=6)
 			forwardMov += 0.08;
-		//alfa += 0.08;
-		//printf("%d", forward);
-		//posxCubeMeteorites += 0.08;
-		//cout << posxCubeMeteorites << endl;
 		glutPostRedisplay();
 		break;
 		//Movimento indietro
 	case 's':
-		if (startingGame)
+		if (startingGame && forwardMov>=-5.2)
 			forwardMov -= 0.08;
-		//printf("%d", forward);
-		/*posxCubeMeteorites -= 0.08;
-		cout << posxCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 		//Movimento a sinistra
 	case 'a':
-		if (startingGame)
+		if (startingGame && leftMov<=6)
 			leftMov += 0.08;
-		//alfa += 0.5;
-		//printf("%d", left);
-		/*posyCubeMeteorites += 0.08;
-		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 		//Movimento a destra
 	case 'd':
-		if (startingGame)
+		if (startingGame && leftMov>=-6)
 			leftMov -= 0.08;
-		/*posyCubeMeteorites -= 0.08;
-		cout << posyCubeMeteorites << endl;*/
 		glutPostRedisplay();
 		break;
 		//Up-boost
 	case 'q':
 		if (startingGame)
 			up += 0.08;
-		/*poszCubeMeteorites += 0.08;
-		cout << poszCubeMeteorites << endl;*/
+		cout << up << endl;
 		glutPostRedisplay();
 		break;
 		//Down-boost
 	case 'e':
 		if (startingGame)
 			up -= 0.08;
-		/*poszCubeMeteorites -= 0.08;
-		cout << poszCubeMeteorites << endl;*/
+		cout << up << endl;
 		glutPostRedisplay();
 		break;
 		//Tasti per test 
