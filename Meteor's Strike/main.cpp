@@ -246,9 +246,9 @@ void drawString(int x, int y, char *string) {
 	glPopMatrix();
 }
 
-void drawStringV2(int x, int y, char *string) {
-	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(5.0);
+void drawStringV2(int x, int y, GLfloat scale, GLfloat lineWidth, char *string) {
+	glColor3f(0.0, 1.0, 0.0);
+	glLineWidth(lineWidth);
 
 	int w = glutGet(GLUT_WINDOW_WIDTH);
 	int h = glutGet(GLUT_WINDOW_HEIGHT);
@@ -267,7 +267,7 @@ void drawStringV2(int x, int y, char *string) {
 	//Translates the character object with its axis of rotation
 	glTranslatef(x, y, 0);
 
-	glScalef(0.3, 0.3, 0.3);
+	glScalef(scale, scale, scale);
 
 	//glRotatef(angle, 0.0, 1.0, 0.0);
 
@@ -1153,7 +1153,7 @@ void display(void) {
 
 	//In alto al centro
 	//drawString((w / 2), (h - 50), levelStr);
-	drawStringV2((w / 2), (h - 50), levelStr);
+	drawStringV2((w / 2) - 100, (h - 50), 0.3, 5.9, levelStr);
 	
 	//Stringa per chiedere se continuare il gioco 
 	drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
