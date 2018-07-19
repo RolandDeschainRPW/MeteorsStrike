@@ -29,8 +29,7 @@ Meteorite::Meteorite(int selMeteor) {
 		scene_listNum = 2;
 		break;
 	case 1:
-		//sizeCubeMeteorites = 0.36;
-		sizeCubeMeteorites = 0.16;
+		sizeCubeMeteorites = 0.36;
 		posxCubeMeteorites = -20.64;
 		posyCubeMeteorites = 0.24;
 		poszCubeMeteorites = 14.4;
