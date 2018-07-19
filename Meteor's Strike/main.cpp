@@ -262,8 +262,6 @@ void drawStringV2(int x, int y, char *string) {
 	glPushMatrix();
 	glLoadIdentity();
 
-	glPushMatrix();
-
 	glDisable(GL_DEPTH_TEST);
 
 	//Translates the character object with its axis of rotation
