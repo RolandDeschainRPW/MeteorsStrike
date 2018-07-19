@@ -167,9 +167,12 @@ time_t startTime;
 //Livello
 int level = 1;
 
+//Arrivati al livello 15, viene richiesto se si vuole continuare a giocare
+bool askToContinue = false;
+
 //Aggiorna il punteggio
 void updateScore() {
-	if (startingGame && !win && !lost) {
+	if (startingGame && !win && !lost && !askToContinue) {
 		time_t currentTime = time(0);
 		score = 100 * (currentTime - startTime);
 
@@ -465,11 +468,11 @@ void do_motion(void) {
 	
 		static GLint prev_time = 0;
 		int time = glutGet(GLUT_ELAPSED_TIME);
-		if (startingGame) {
+		if (startingGame && !askToContinue) {
 			angle -= (time - prev_time)*0.002;
 			//angle -= 0.08;
 		}
-		else
+		else if(!askToContinue)
 			//visualangle -= (time - prev_time)*0.002;
 			visualangle -= 0.08;
 		prev_time = time;
@@ -678,6 +681,11 @@ void display(void) {
 		}
 		else lapDone = false;
 
+		if (askToContinue) {
+			//Qui va messa la richiesta per continuare il gioco
+
+		}
+
 		float tmp;
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glMatrixMode(GL_MODELVIEW);
@@ -792,6 +800,8 @@ void display(void) {
 			}
 			multiplied = true;
 			level++;
+			if (((level-1)%15) == 0)
+				askToContinue = true;
 			sprintf_s(levelStr, "LEVEL %d", level);
 			//cout << "Incremento dei meteoriti!" << endl;
 		}
@@ -1311,15 +1321,6 @@ static void keyboard(unsigned char key, int x, int y) {
 
 		glutPostRedisplay();
 		break;
-	case 'y':
-		//spinmov -= 0.8;
-		//centerx += 0.125;
-		//eyex += 0.125;
-		//ridisegna = true;
-		poszPlanet += 0.08;
-		cout << poszPlanet << endl;
-		glutPostRedisplay();
-		break;
 	case 'h':
 		//spinmov -= 0.8;
 		//centerx -= 0.125;
@@ -1338,8 +1339,20 @@ static void keyboard(unsigned char key, int x, int y) {
 		cout << sizePlanet << endl;
 		break;
 	case'u':
-		win = true;
+		askToContinue = true;
 		glutPostRedisplay();
+		break;
+	case 'y':
+		//Continuo il gioco per altri 15 livelli
+		if (askToContinue) 
+			askToContinue = false;
+		
+		glutPostRedisplay();
+		break;
+	case 'n':
+		//Fine gioco 
+		if (askToContinue)
+			win = true;
 		break;
 	default:
 		break;
