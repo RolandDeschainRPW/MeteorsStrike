@@ -248,7 +248,7 @@ void drawString(int x, int y, char *string) {
 
 void drawStringV2(int x, int y, char *string) {
 	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(3.0);
+	glLineWidth(5.0);
 
 	int w = glutGet(GLUT_WINDOW_WIDTH);
 	int h = glutGet(GLUT_WINDOW_HEIGHT);
@@ -263,14 +263,27 @@ void drawStringV2(int x, int y, char *string) {
 	glLoadIdentity();
 
 	glPushMatrix();
-	glTranslatef(x, y, 0); //Translates the character object with its axis of rotation
-						   //glRotatef(angle, 0.0, 0.0, 1.0);//Rotates the characters about z-axis 
-						   //by angle degree
-						   //glTranslatef(-700,0,0); //translates the character object 
-						   //by 700 unit to the -ve x-axis
+
+	glDisable(GL_DEPTH_TEST);
+
+	//Translates the character object with its axis of rotation
+	glTranslatef(x, y, 0);
+
+	glScalef(0.3, 0.3, 0.3);
+
+	//glRotatef(angle, 0.0, 1.0, 0.0);
+
+	//Rotates the characters about z-axis by angle degree
+	//glRotatef(angle, 0.0, 0.0, 1.0);
+
+	//translates the character object by 700 unit to the -ve x-axis
+	//glTranslatef(-700,0,0); 
+
 	for (int i = 0; i < strlen(string); i++) {
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, string[i]);
 	}
+
+	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -1141,7 +1154,8 @@ void display(void) {
 	drawString((w - 200), (h - 50), livesStr);
 
 	//In alto al centro
-	drawString((w / 2), (h - 50), levelStr);
+	//drawString((w / 2), (h - 50), levelStr);
+	drawStringV2((w / 2), (h - 50), levelStr);
 	
 	//Stringa per chiedere se continuare il gioco 
 	drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
