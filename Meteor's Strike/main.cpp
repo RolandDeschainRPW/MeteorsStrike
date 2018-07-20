@@ -193,6 +193,9 @@ static char tutorialStr7[300] = "";
 static char tutorialStr8[300] = "";
 static char tutorialStr9[300] = "";
 
+//Nome del gioco
+static char gameName[30] = "";
+
 // Avvio tutorial
 bool tutorial = false;
 
@@ -663,6 +666,7 @@ void startGame(int choice) {
 			sprintf_s(levelStr, "LEVEL  %d", level);
 			startTime = time(0);
 
+			sprintf_s(gameName, "", "");
 			sprintf_s(strStartGame, "", "");
 			sprintf_s(strStartGame2, "", "");
 
@@ -685,6 +689,7 @@ void startGame(int choice) {
 void display(void) {
 	if (!startingGame) {
 		//Apparizione stringa iniziale
+		sprintf_s(gameName, "%s", "METEOR'S STRIKE");
 		sprintf_s(strStartGame, "%s", "CLICCA COL TASTO SINISTRO");
 		sprintf_s(strStartGame2, "%s", "PER APRIRE IL MENU'");
 
@@ -709,6 +714,7 @@ void display(void) {
 
 		glutDestroyMenu(startMenu);
 
+		sprintf_s(gameName, "", "");
 		sprintf_s(strStartGame, "", "");
 		sprintf_s(strStartGame2, "", "");
 
@@ -1059,8 +1065,9 @@ void display(void) {
 
 	//Stringa iniziale
 	//drawString((w / 2) - 300, (h - 50) / 2, strStartGame);
-	drawStringV2((w / 2) - 300, (h - 50) / 2, 0.25, 4.0, strStartGame);
-	drawStringV2((w / 2) - 250, (h - 150) / 2, 0.25, 4.0, strStartGame2);
+	drawStringV2((w / 2) - 400, h-200, 0.7, 6.0, gameName);
+	drawStringV2((w / 2) - 250, (h - 150) / 2, 0.25, 4.0, strStartGame);
+	drawStringV2((w / 2) - 200, (h - 250) / 2, 0.25, 4.0, strStartGame2);
 
 	//Tutorial
 	drawStringV2(20, (h - 50), 0.25, 4.0, tutorialStr);
