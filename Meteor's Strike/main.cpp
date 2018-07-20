@@ -745,7 +745,7 @@ void display(void) {
 		glLoadIdentity();
 		//Focus to spaceship
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, 0.f, 1.f, 0.f);
-		// rotate it around the y axis
+		//Rotazione vista lungo l'asse y
 		glRotatef(visualangle, 0.f, 1.f, 0.f);
 
 		// center the model
@@ -853,7 +853,7 @@ void display(void) {
 				askToContinue = true;
 
 			sprintf_s(levelStr, "LEVEL %d", level);
-			cout << "Incremento dei meteoriti!" << endl;
+			//cout << "Incremento dei meteoriti!" << endl;
 		}
 		else if (!lapDone) multiplied = false;
 
