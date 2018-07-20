@@ -1407,7 +1407,7 @@ int main(int argc, char **argv) {
 	*/
 
 	loadasset("models\\scenario.obj");
-
+	//loadasset("C:\\Users\\Edoardo Demuru\\Desktop\\Materiale politecnico\\Informatica Grafica\\Progetti\\MeteorsStrike\\Meteor's Strike\\models");
 
 	if (!InitGL()) {
 		fprintf(stderr, "Initialization failed");
