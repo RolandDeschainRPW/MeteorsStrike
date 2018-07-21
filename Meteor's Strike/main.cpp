@@ -36,9 +36,9 @@ struct aiVector3D scene_min, scene_max, scene_center;
 //Liste da renderizzare
 //GLubyte lists[2];
 
-GLfloat LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+GLfloat LightAmbient[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 GLfloat LightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-GLfloat LightPosition[] = { 0.0f, 0.0f, 15.0f, 1.0f };
+GLfloat LightPosition[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 // current rotation angle
 static float angle = 0.f;
