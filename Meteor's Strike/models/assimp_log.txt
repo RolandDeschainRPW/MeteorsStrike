@@ -1,2 +1,0 @@
-Info,  T2440: Load models\scenario.obj
-Error, T2440: Unable to open file "models\scenario.obj".
