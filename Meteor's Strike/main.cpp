@@ -12,7 +12,6 @@
 #include <random>
 #include <math.h>
 #include "Meteorites.h"
-#include "Planet.h"
 #include <ctime>
 
 using namespace std;
@@ -91,16 +90,16 @@ static GLubyte lists[3];
 
 //Valori cubo per collisioni astronave
 //static double sizeCubeSpaceship = 1.68;
-static double sizeCubeSpaceship = 0.5;
-static float posxCubeSpaceship = -18.16;
-static float posyCubeSpaceship = 0;
-static float poszCubeSpaceship = 0;
+static double sizeSphereSpaceship = 0.5;
+static float posxSphereSpaceship = -18.16;
+static float posySphereSpaceship = 0;
+static float poszSphereSpaceship = 0;
 
 // Valori cubo per collisioni asteroidi
-static double sizeCubeMeteorites = 1.2;
-static float posxCubeMeteorites = -17.6;
-static float posyCubeMeteorites = 0;
-static float poszCubeMeteorites = 10.96;
+static double sizeSphereMeteorites = 1.2;
+static float posxSphereMeteorites = -17.6;
+static float posySphereMeteorites = 0;
+static float poszSphereMeteorites = 10.96;
 
 static double sizePlanet = 2;
 static float posxPlanet = 0.0;
@@ -515,10 +514,8 @@ void do_motion(void) {
 		int time = glutGet(GLUT_ELAPSED_TIME);
 		if (startingGame && !askToContinue) {
 			angle -= (time - prev_time)*diffAngle;
-			//angle -= 0.08;
 		}
 		else if(!askToContinue)
-			//visualangle -= (time - prev_time)*0.002;
 			visualangle -= 0.08;
 		prev_time = time;
 		glutPostRedisplay();
@@ -536,14 +533,14 @@ bool checkCollisionWithMeteor() {
 		z'= -xsen(a)+zcos(a)
 		*/
 		double radiantAngle = (((angle * 10)+offsetAngleMeteorites)*PI) / 180;
-		double x1 = m.getPosxCube();
-		double x2 = posxCubeSpaceship + leftMov;
-		double y1 = m.getPosyCube();
-		double y2 = posyCubeSpaceship + up;
-		double z1 = m.getPoszCube();
-		double z2 = poszCubeSpaceship + forwardMov;
+		double x1 = m.getPosxSphere();
+		double x2 = posxSphereSpaceship + leftMov;
+		double y1 = m.getPosySphere();
+		double y2 = posySphereSpaceship + up;
+		double z1 = m.getPoszSphere();
+		double z2 = poszSphereSpaceship + forwardMov;
 
-
+		//Calcolo posizione una volta applicata la rotazione
 		double xrot = (x1 * cos(radiantAngle)) + (z1*sin(radiantAngle));
 		double zrot = (-x1 * sin(radiantAngle)) + (z1 * cos(radiantAngle));
 
@@ -551,8 +548,9 @@ bool checkCollisionWithMeteor() {
 		double dy = y1 - y2;
 		double dz = zrot - z2;
 
+		//Distanza tra le sfere
 		double distance = sqrt(dx * dx + dy * dy + dz * dz);
-		if (distance <= m.getSizeCube() + sizeCubeSpaceship) {
+		if (distance <= m.getSizeSphere() + sizeSphereSpaceship) {
 			return true;
 		}
 
@@ -563,6 +561,7 @@ bool checkCollisionWithMeteor() {
 }
 
 
+// True se l'astronave deve essere visualizzata
 bool showSpaceship() {
 	int num = 190;
 	while (num != 10) {
@@ -653,6 +652,7 @@ void resetGame() {
 	glutPostRedisplay();
 }
 
+//Funzione per gestione del menù
 void startGame(int choice) {
 	switch (choice) {
 		//Avvia gioco
@@ -726,8 +726,6 @@ void display(void) {
 		
 		// Verifica se i meteoriti hanno effettuato un giro completo
 		if ((int)((angle * 10)) % 360 > -20) {
-			//if (angle != 0)
-				//cout << "Giro completo dei meteoriti!" << endl;
 			lapDone = true;
 		}
 		else lapDone = false;
@@ -848,12 +846,11 @@ void display(void) {
 				diffAngle += 0.0005;
 			}
 
-				
+			//Richiesta per proseguimento gioco	
 			if (((level-1)%15) == 0)
 				askToContinue = true;
 
 			sprintf_s(levelStr, "LEVEL %d", level);
-			//cout << "Incremento dei meteoriti!" << endl;
 		}
 		else if (!lapDone) multiplied = false;
 
@@ -943,7 +940,9 @@ void display(void) {
 
 		glPopMatrix();*/
 
-	} else if(win) {
+	} 
+	// Vittoria
+	else if(win) {
 		//Elimino richiesta 
 		sprintf_s(askToContStr, "", "");
 		sprintf_s(askToContStr2, "", "");
@@ -983,6 +982,7 @@ void display(void) {
 			resetGame();
 		}
 	}
+	//Sconfitta
 	else if (lost) {
 
 		float tmp;
@@ -1039,32 +1039,25 @@ void display(void) {
 
 	//In alto a sinistra
 	updateScore();
-	//drawString(50, (h - 50), scoreStr);
 	drawStringV2(20, (h - 50), 0.25, 4.0, scoreStr);
 
 	//In alto a destra
-	//drawString((w - 200), (h - 50), livesStr);
 	drawStringV2((w - 150), (h - 50), 0.25, 4.0, livesStr);
 
 	//In alto al centro
-	//drawString((w / 2), (h - 50), levelStr);
 	drawStringV2((w / 2) - 75, (h - 50), 0.25, 4.0, levelStr);
 	
 	//Stringa per chiedere se continuare il gioco 
-	//drawString((w / 2) - 300, (h - 50) / 2, askToContStr);
 	drawStringV2((w / 2) - 300, (h - 50) / 2, 0.25, 4.0, askToContStr);
 	drawStringV2((w / 2) - 200, (h - 150) / 2, 0.25, 4.0, askToContStr2);
 
 	//Game over
-	//drawString((w / 2) - 100, (h - 50) / 2, gameOver);
 	drawStringV2((w / 2) - 400, (h / 2) - 50, 1, 8.0, gameOver);
 
 	//Vittoria
-	//drawString((w / 2) - 100, (h - 50) / 2, youWin);
 	drawStringV2((w / 2) - 380, (h / 2) - 50, 1, 8.0, youWin);
 
 	//Stringa iniziale
-	//drawString((w / 2) - 300, (h - 50) / 2, strStartGame);
 	drawStringV2((w / 2) - 400, h-200, 0.7, 6.0, gameName);
 	drawStringV2((w / 2) - 250, (h - 150) / 2, 0.25, 4.0, strStartGame);
 	drawStringV2((w / 2) - 200, (h - 250) / 2, 0.25, 4.0, strStartGame2);
@@ -1319,10 +1312,6 @@ static void keyboard(unsigned char key, int x, int y) {
 			up -= 0.08;
 		glutPostRedisplay();
 		break;
-	case'u':
-		askToContinue = true;
-		glutPostRedisplay();
-		break;
 	case 'y':
 		//Continuo il gioco per altri 15 livelli
 		if (askToContinue) {
@@ -1340,7 +1329,7 @@ static void keyboard(unsigned char key, int x, int y) {
 		}
 		break;
 	case SPACEBAR:
-		if (!startingGame || win || lost) {
+		if (tutorial) {
 			tutorial = false;
 			startingGame = true;
 			visualangle = 0;
@@ -1393,7 +1382,7 @@ int main(int argc, char **argv) {
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_FILE, "assimp_log.txt");
 	aiAttachLogStream(&stream);
 
-	// qui invocheremo la scena del gioco!
+	
 	/*
 	if (argc >= 2)
 	loadasset(argv[1]);

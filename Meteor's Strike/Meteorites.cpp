@@ -21,35 +21,32 @@ Meteorite::Meteorite(int selMeteor) {
 
 	switch (selMeteor) {
 	case 0:
-		//sizeCubeMeteorites = 0.60;
-		sizeCubeMeteorites = 0.25;
-		posxCubeMeteorites = -17.52;
-		posyCubeMeteorites = 0.16;
-		poszCubeMeteorites = 10.88;
+		sizeSphereMeteorites = 0.25;
+		posxSphereMeteorites = -17.52;
+		posySphereMeteorites = 0.16;
+		poszSphereMeteorites = 10.88;
 		scene_listNum = 2;
 		break;
 	case 1:
-		sizeCubeMeteorites = 0.36;
-		posxCubeMeteorites = -20.64;
-		posyCubeMeteorites = 0.24;
-		poszCubeMeteorites = 14.4;
+		sizeSphereMeteorites = 0.36;
+		posxSphereMeteorites = -20.64;
+		posySphereMeteorites = 0.24;
+		poszSphereMeteorites = 14.4;
 		scene_listNum = 3;
 		break;
 
 	case 2:
-		//sizeCubeMeteorites = 0.90;
-		sizeCubeMeteorites = 0.55;
-		posxCubeMeteorites = -20.56;
-		posyCubeMeteorites = 0.08;
-		poszCubeMeteorites = 11.04;
+		sizeSphereMeteorites = 0.55;
+		posxSphereMeteorites = -20.56;
+		posySphereMeteorites = 0.08;
+		poszSphereMeteorites = 11.04;
 		scene_listNum = 4;
 		break;
 	case 3:
-		//sizeCubeMeteorites = 0.64;
-		sizeCubeMeteorites = 0.45;
-		posxCubeMeteorites = -17.2;
-		posyCubeMeteorites = 0.16;
-		poszCubeMeteorites = 14.8;
+		sizeSphereMeteorites = 0.45;
+		posxSphereMeteorites = -17.2;
+		posySphereMeteorites = 0.16;
+		poszSphereMeteorites = 14.8;
 		scene_listNum = 5;
 		break;
 	}
@@ -67,27 +64,27 @@ float Meteorite::getPosz() {
 	return this->zmeteorite;
 }
 
-float Meteorite::getPosxCube() {
-	return this->posxCubeMeteorites + xmeteorite;
+float Meteorite::getPosxSphere() {
+	return this->posxSphereMeteorites + xmeteorite;
 }
 
-float Meteorite::getPosyCube() {
-	return this->posyCubeMeteorites + ymeteorite;
+float Meteorite::getPosySphere() {
+	return this->posySphereMeteorites + ymeteorite;
 }
-float Meteorite::getPoszCube() {
-	return this->poszCubeMeteorites + zmeteorite;
+float Meteorite::getPoszSphere() {
+	return this->poszSphereMeteorites + zmeteorite;
 }
 
-double Meteorite::getSizeCube() {
-	return this->sizeCubeMeteorites;
+double Meteorite::getSizeSphere() {
+	return this->sizeSphereMeteorites;
 }
 
 int Meteorite::getSceneList() {
 	return this->scene_listNum;
 }
 
-void Meteorite::setSizeCube(double size) {
-	this->sizeCubeMeteorites = size;
+void Meteorite::setSizeSphere(double size) {
+	this->sizeSphereMeteorites = size;
 }
 
 int Meteorite::getIndex() {
